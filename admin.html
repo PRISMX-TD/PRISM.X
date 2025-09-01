@@ -242,6 +242,13 @@
             border-left: 3px solid #8b5cf6;
         }
 
+        .account-extra-details {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #777;
+            line-height: 1.3;
+        }
+
         .account-actions {
             display: flex;
             gap: 10px;
@@ -451,6 +458,18 @@
                     <div class="form-group">
                         <label for="accountDrawdown">最大回撤 (%)</label>
                         <input type="number" id="accountDrawdown" step="0.01" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="accountInitialBalance">初始资金 (USD)</label>
+                        <input type="number" id="accountInitialBalance" step="0.01" placeholder="用于计算实际收益">
+                    </div>
+                    <div class="form-group">
+                        <label for="accountTrades">交易次数</label>
+                        <input type="number" id="accountTrades" min="0" placeholder="用于计算交易频率">
+                    </div>
+                    <div class="form-group">
+                        <label for="accountWinRate">胜率 (%)</label>
+                        <input type="number" id="accountWinRate" step="0.01" min="0" max="100" placeholder="盈利交易占比">
                     </div>
                     <div class="form-group">
                         <label for="accountStatus">账户状态</label>
@@ -682,6 +701,9 @@
                     balance: parseFloat(accountData.balance),
                     gain: parseFloat(accountData.gain) || 0,
                     drawdown: parseFloat(accountData.drawdown) || 0,
+                    initialBalance: parseFloat(accountData.initialBalance) || parseFloat(accountData.balance),
+                    trades: parseInt(accountData.trades) || 0,
+                    winRate: parseFloat(accountData.winRate) || 0,
                     status: accountData.status || 'active',
                     description: accountData.description || '',
                     createdAt: new Date().toISOString(),
@@ -702,6 +724,9 @@
                     balance: parseFloat(accountData.balance),
                     gain: parseFloat(accountData.gain) || 0,
                     drawdown: parseFloat(accountData.drawdown) || 0,
+                    initialBalance: parseFloat(accountData.initialBalance) || parseFloat(accountData.balance),
+                    trades: parseInt(accountData.trades) || 0,
+                    winRate: parseFloat(accountData.winRate) || 0,
                     status: accountData.status || 'active',
                     description: accountData.description || '',
                     updatedAt: new Date().toISOString()
@@ -748,6 +773,11 @@
                                 收益率: ${account.gain}% | 
                                 状态: ${this.getStatusText(account.status)}
                             </div>
+                            <div class="account-extra-details">
+                                ${account.initialBalance ? `初始资金: $${account.initialBalance.toFixed(2)} | ` : ''}
+                                ${account.trades ? `交易次数: ${account.trades} | ` : ''}
+                                ${account.winRate ? `胜率: ${account.winRate}%` : ''}
+                            </div>
                             ${account.description ? `
                                 <div class="account-description">
                                     ${account.description}
@@ -768,10 +798,25 @@
             updateOverviewStats() {
                 const totalAccounts = this.accountsData.accounts.length;
                 const activeAccounts = this.accountsData.accounts.filter(acc => acc.status === 'active').length;
-                const avgGain = totalAccounts > 0 ? 
-                    (this.accountsData.accounts.reduce((sum, acc) => sum + acc.gain, 0) / totalAccounts).toFixed(2) : 0;
-                const maxDrawdown = totalAccounts > 0 ? 
-                    Math.max(...this.accountsData.accounts.map(acc => acc.drawdown)) : 0;
+                
+                let totalProfit = 0;
+                let avgGain = 0;
+                let avgDrawdown = 0;
+                
+                if (totalAccounts > 0) {
+                    // 计算总收益（基于账户余额和收益率）
+                    totalProfit = this.accountsData.accounts.reduce((sum, acc) => {
+                        const balance = parseFloat(acc.balance || 0);
+                        const gain = parseFloat(acc.gain || 0);
+                        return sum + (balance * gain / 100);
+                    }, 0);
+                    
+                    // 计算平均收益率
+                    avgGain = (this.accountsData.accounts.reduce((sum, acc) => sum + parseFloat(acc.gain || 0), 0) / totalAccounts).toFixed(2);
+                    
+                    // 计算平均回撤
+                    avgDrawdown = (this.accountsData.accounts.reduce((sum, acc) => sum + parseFloat(acc.drawdown || 0), 0) / totalAccounts).toFixed(2);
+                }
 
                 this.accountsData.system.totalAccounts = totalAccounts;
                 this.accountsData.system.activeAccounts = activeAccounts;
@@ -791,6 +836,10 @@
             // 清空表单
             clearForm() {
                 document.getElementById('accountForm').reset();
+                // 设置默认值
+                document.getElementById('accountInitialBalance').value = '';
+                document.getElementById('accountTrades').value = '';
+                document.getElementById('accountWinRate').value = '';
                 this.editingIndex = -1;
                 document.getElementById('saveBtn').textContent = '保存账户';
             }
@@ -805,6 +854,9 @@
                 document.getElementById('accountBalance').value = account.balance;
                 document.getElementById('accountGain').value = account.gain;
                 document.getElementById('accountDrawdown').value = account.drawdown;
+                document.getElementById('accountInitialBalance').value = account.initialBalance || account.balance;
+                document.getElementById('accountTrades').value = account.trades || 0;
+                document.getElementById('accountWinRate').value = account.winRate || 0;
                 document.getElementById('accountStatus').value = account.status;
                 document.getElementById('accountDescription').value = account.description;
 
@@ -925,6 +977,9 @@
                 balance: document.getElementById('accountBalance').value,
                 gain: document.getElementById('accountGain').value,
                 drawdown: document.getElementById('accountDrawdown').value,
+                initialBalance: document.getElementById('accountInitialBalance').value,
+                trades: document.getElementById('accountTrades').value,
+                winRate: document.getElementById('accountWinRate').value,
                 status: document.getElementById('accountStatus').value,
                 description: document.getElementById('accountDescription').value.trim()
             };
