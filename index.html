@@ -1403,6 +1403,11 @@
             color: #cccccc;
             line-height: 1.6;
             font-size: 0.95rem;
+            white-space: pre-line;
+            background: rgba(139, 92, 246, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid rgba(139, 92, 246, 0.3);
         }
 
         .detail-card h4 {
@@ -3231,7 +3236,7 @@
                         
                         ${account.description ? `
                             <div class="account-description">
-                                <p>${account.description}</p>
+                                <p style="white-space: pre-line;">${account.description}</p>
                             </div>
                         ` : ''}
                     </div>
