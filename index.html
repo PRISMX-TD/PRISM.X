@@ -1039,8 +1039,8 @@
         /* 账户展示区域样式 */
         .accounts-overview {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 25px;
             margin: 50px 0;
         }
 
@@ -1048,7 +1048,7 @@
             background: rgba(139, 92, 246, 0.1);
             border: 1px solid rgba(139, 92, 246, 0.3);
             border-radius: 20px;
-            padding: 35px 25px;
+            padding: 30px 20px;
             text-align: center;
             backdrop-filter: blur(25px);
             transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -1058,7 +1058,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 140px;
+            min-height: 120px;
         }
 
         .letter-section.active .overview-card {
@@ -1090,7 +1090,7 @@
         }
 
         .overview-number {
-            font-size: 2.4rem;
+            font-size: 1.8rem;
             font-weight: 700;
             color: #8b5cf6;
             margin-bottom: 12px;
@@ -1101,13 +1101,13 @@
             text-align: center;
             line-height: 1;
             position: relative;
-            min-height: 3rem;
+            min-height: 2.5rem;
         }
         
         /* 为包含百分比的数字添加特殊样式 */
         .overview-number[id="avgGain"],
         .overview-number[id="avgDrawdown"] {
-            font-size: 2.2rem;
+            font-size: 1.6rem;
         }
         
         /* 确保所有概览数字都完美居中 */
@@ -1116,7 +1116,7 @@
         }
         
         .overview-label {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #cccccc;
             font-weight: 500;
             text-align: center;
@@ -1127,12 +1127,12 @@
         /* 响应式设计优化 */
         @media (max-width: 768px) {
             .overview-number {
-                font-size: 2rem;
+                font-size: 1.6rem;
             }
             
             .overview-number[id="avgGain"],
             .overview-number[id="avgDrawdown"] {
-                font-size: 1.8rem;
+                font-size: 1.4rem;
             }
             
             .stat-value .number-value {
@@ -1156,12 +1156,12 @@
             }
             
             .overview-number {
-                font-size: 1.8rem;
+                font-size: 1.4rem;
             }
             
             .overview-number[id="avgGain"],
             .overview-number[id="avgDrawdown"] {
-                font-size: 1.6rem;
+                font-size: 1.2rem;
             }
         }
 
@@ -1289,7 +1289,7 @@
         .overview-number[id="avgGain"]::after,
         .overview-number[id="avgDrawdown"]::after {
             content: '%';
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             color: #8b5cf6;
             opacity: 0.8;
             margin-left: 2px;
@@ -2921,29 +2921,29 @@
                         <div class="overview-card">
                             <div class="overview-number" id="totalProfit">$0</div>
                             <div class="overview-label">总收益</div>
-                        </div>
+                            </div>
                         <div class="overview-card">
                             <div class="overview-number" id="avgGain">0</div>
                             <div class="overview-label">平均收益率</div>
-                        </div>
+                                    </div>
                         <div class="overview-card">
                             <div class="overview-number" id="avgDrawdown">0</div>
                             <div class="overview-label">平均回撤</div>
-                        </div>
+                                    </div>
                         <div class="overview-card">
                             <div class="overview-number" id="totalAccounts">0</div>
                             <div class="overview-label">总账户数</div>
-                        </div>
-                    </div>
+                            </div>
+                                </div>
                                 
                     <!-- 账户列表 -->
                     <div class="accounts-container" id="accountsContainer">
                         <div class="loading-accounts">
                             <div class="loading-spinner"></div>
                             <p>正在加载账户数据...</p>
+                            </div>
                         </div>
-                    </div>
-                </div>
+                            </div>
             </section>
                                     
     <script>
