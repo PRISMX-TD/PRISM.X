@@ -804,11 +804,11 @@
                 let avgDrawdown = 0;
                 
                 if (totalAccounts > 0) {
-                    // 计算总收益（基于账户余额和收益率）
+                    // 计算总收益：当前余额 - 初始余额
                     totalProfit = this.accountsData.accounts.reduce((sum, acc) => {
                         const balance = parseFloat(acc.balance || 0);
-                        const gain = parseFloat(acc.gain || 0);
-                        return sum + (balance * gain / 100);
+                        const initialBalance = parseFloat(acc.initialBalance || 0);
+                        return sum + (balance - initialBalance);
                     }, 0);
                     
                     // 计算平均收益率
