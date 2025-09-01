@@ -2,10 +2,25 @@
   "system": {
     "version": "1.0",
     "lastUpdate": "2025-01-29T10:00:00Z",
-    "totalAccounts": 0,
-    "activeAccounts": 0
+    "totalAccounts": 1,
+    "activeAccounts": 1
   },
-  "accounts": [],
+  "accounts": [
+    {
+      "id": "test-001",
+      "name": "测试账户",
+      "category": "balanced",
+      "balance": 10000.00,
+      "gain": 15.5,
+      "drawdown": 8.2,
+      "daily": 2.1,
+      "monthly": 12.3,
+      "status": "active",
+      "description": "这是一个测试账户，用于验证换行符显示功能。\n\n第二行：包含换行符的描述\n第三行：确保换行符能正确显示\n\n最后一行：测试完成",
+      "createdAt": "2025-01-29T10:00:00Z",
+      "updatedAt": "2025-01-29T10:00:00Z"
+    }
+  ],
   "categories": [
     {
       "id": "high-return",
