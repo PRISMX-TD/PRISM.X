@@ -2750,7 +2750,7 @@
             <!-- P - Precision -->
             <section class="letter-section" id="precision">
                 <div class="letter-content">
-                    <div class="section-letter">P</div>
+                    <div class="section-letter" onclick="handleAdminClick(event)" style="cursor: pointer;">P</div>
                     <h2 class="section-title">Precision 精准</h2>
                     <p class="section-description">
                         光线通过棱镜的精确折射，我们将复杂的市场数据转化为精准的交易信号。每一个策略参数都经过严格的数学验证和实盘检验。
@@ -2948,6 +2948,45 @@
             </section>
                                     
     <script>
+        // 管理员入口功能 - 全局变量和函数
+        let adminClickCount = 0;
+        let adminClickTimer = null;
+        
+        // 全局函数：处理管理员点击
+        function handleAdminClick(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            adminClickCount++;
+            
+            // 清除之前的计时器
+            if (adminClickTimer) {
+                clearTimeout(adminClickTimer);
+            }
+            
+            // 如果点击次数达到5次，跳转到管理员页面
+            if (adminClickCount >= 5) {
+                window.location.href = 'admin.html';
+                return;
+            }
+            
+            // 设置3秒后重置计数
+            adminClickTimer = setTimeout(() => {
+                adminClickCount = 0;
+            }, 3000);
+            
+            // 添加微妙的视觉反馈
+            const pElement = document.querySelector('#precision .section-letter');
+            if (pElement) {
+                pElement.style.transform = 'scale(1.02)';
+                pElement.style.filter = 'brightness(1.1)';
+                setTimeout(() => {
+                    pElement.style.transform = 'scale(1)';
+                    pElement.style.filter = 'brightness(1)';
+                }, 150);
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
 
             // 隐藏管理入口 - 按特定键组合进入
@@ -3982,49 +4021,7 @@
 
             // ===== 页面功能增强结束 =====
             
-            // ===== 管理员入口功能 =====
-            let adminClickCount = 0;
-            let adminClickTimer = null;
-            
-            function handleAdminClick() {
-                adminClickCount++;
-                
-                // 清除之前的计时器
-                if (adminClickTimer) {
-                    clearTimeout(adminClickTimer);
-                }
-                
-                // 如果点击次数达到5次，跳转到管理员页面
-                if (adminClickCount >= 5) {
-                    window.location.href = 'admin.html';
-                    return;
-                }
-                
-                // 设置3秒后重置计数
-                adminClickTimer = setTimeout(() => {
-                    adminClickCount = 0;
-                }, 3000);
-                
-                // 添加视觉反馈
-                const pElement = document.querySelector('#precision .section-letter');
-                if (pElement) {
-                    pElement.style.transform = 'scale(1.1)';
-                    pElement.style.filter = 'brightness(1.5)';
-                    setTimeout(() => {
-                        pElement.style.transform = 'scale(1)';
-                        pElement.style.filter = 'brightness(1)';
-                    }, 200);
-                }
-            }
-            
-            // 为P字母添加点击事件
-            document.addEventListener('DOMContentLoaded', function() {
-                const pElement = document.querySelector('#precision .section-letter');
-                if (pElement) {
-                    pElement.style.cursor = 'pointer';
-                    pElement.addEventListener('click', handleAdminClick);
-                }
-            });
+            // 管理员点击功能已移至全局作用域
         });
     </script>
 
