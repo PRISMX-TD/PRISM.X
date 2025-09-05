@@ -48,6 +48,42 @@
             letter-spacing: 2px;
         }
 
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            margin-left: 20px;
+        }
+
+        .sync-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .sync-success {
+            background: #22c55e;
+        }
+
+        .sync-error {
+            background: #ef4444;
+        }
+
+        .sync-warning {
+            background: #f59e0b;
+        }
+
+        .sync-syncing {
+            background: #8b5cf6;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         .admin-nav {
             display: flex;
             gap: 20px;
@@ -406,7 +442,13 @@
 <body>
     <!-- 顶部导航栏 -->
     <header class="admin-header">
-        <h1 class="admin-title">PRISM X 管理后台</h1>
+        <div style="display: flex; align-items: center;">
+            <h1 class="admin-title">PRISM X 管理后台</h1>
+            <div class="sync-status" id="syncStatus">
+                <div class="sync-indicator sync-success"></div>
+                <span id="syncText">已连接</span>
+            </div>
+        </div>
         <nav class="admin-nav">
             <button class="nav-btn active" onclick="showSection('dashboard')">仪表板</button>
             <button class="nav-btn" onclick="showSection('accounts')">账户管理</button>
@@ -571,15 +613,28 @@
                 
                 <div class="form-row">
                     <div class="form-group">
+                        <h3 style="color: #8b5cf6; margin-bottom: 15px;">数据同步</h3>
+                        <p style="color: #cccccc; margin-bottom: 15px;">手动同步云端数据</p>
+                        <button class="btn btn-primary" onclick="manualSync()">同步数据</button>
+                    </div>
+                    <div class="form-group">
                         <h3 style="color: #8b5cf6; margin-bottom: 15px;">数据备份</h3>
                         <p style="color: #cccccc; margin-bottom: 15px;">导出当前所有数据为JSON文件</p>
                         <button class="btn btn-primary" onclick="exportData()">导出数据</button>
                     </div>
+                </div>
+                
+                <div class="form-row">
                     <div class="form-group">
                         <h3 style="color: #8b5cf6; margin-bottom: 15px;">数据导入</h3>
                         <p style="color: #cccccc; margin-bottom: 15px;">从JSON文件导入数据</p>
                         <input type="file" id="importFile" accept=".json" style="margin-bottom: 10px;">
                         <button class="btn btn-success" onclick="importData()">导入数据</button>
+                    </div>
+                    <div class="form-group">
+                        <h3 style="color: #8b5cf6; margin-bottom: 15px;">连接状态</h3>
+                        <p style="color: #cccccc; margin-bottom: 15px;">当前状态: <span id="connectionStatus">检查中...</span></p>
+                        <p style="color: #666; font-size: 12px;">自动同步每30秒检查一次更新</p>
                     </div>
                 </div>
                 
@@ -711,11 +766,18 @@
         let categoriesData = [];
         let currentEditingAccount = null;
         let currentEditingCategory = null;
+        let syncInterval = null;
+        let isOnline = navigator.onLine;
+        
+        // API配置
+        const API_BASE_URL = 'https://prism-x.vercel.app/api';
 
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             loadData();
             loadSettings();
+            startAutoSync();
+            setupOnlineStatus();
         });
 
         // 显示指定部分
@@ -756,19 +818,37 @@
         // 加载数据
         async function loadData() {
             try {
-                const response = await fetch('data/accounts.json');
-                const data = await response.json();
-                accountsData = data.accounts || [];
-                categoriesData = data.categories || [];
+                if (isOnline) {
+                    // 从API加载数据
+                    const response = await fetch(`${API_BASE_URL}/data`);
+                    if (!response.ok) {
+                        throw new Error(`API请求失败: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    accountsData = data.accounts || [];
+                    categoriesData = data.categories || [];
+                    console.log('从API加载数据成功');
+                } else {
+                    // 离线模式：从本地文件加载
+                    const response = await fetch('data/accounts.json');
+                    const data = await response.json();
+                    accountsData = data.accounts || [];
+                    categoriesData = data.categories || [];
+                    console.log('离线模式：从本地文件加载数据');
+                }
                 
                 // 更新仪表板
                 updateDashboard();
                 
                 // 加载分类选项
                 loadCategoryOptions();
+                
+                // 更新同步状态
+                updateSyncStatus('success', '数据加载成功');
             } catch (error) {
                 console.error('加载数据失败:', error);
                 showAlert('errorAlert', '加载数据失败: ' + error.message);
+                updateSyncStatus('error', '数据加载失败');
             }
         }
 
@@ -967,13 +1047,36 @@
                     }
                 };
                 
-                // 注意：由于浏览器安全限制，无法直接写入本地文件
-                // 这里只是更新内存中的数据，实际部署时需要后端API支持
-                console.log('数据已更新:', data);
-                showAlert('successAlert', '数据已更新（需要后端API支持实际保存）');
+                if (isOnline) {
+                    // 在线模式：保存到API
+                    updateSyncStatus('syncing', '正在同步数据...');
+                    
+                    const response = await fetch(`${API_BASE_URL}/data`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`保存失败: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('数据保存成功:', result);
+                    showAlert('successAlert', '数据已同步到云端');
+                    updateSyncStatus('success', '数据同步成功');
+                } else {
+                    // 离线模式：只更新本地内存
+                    console.log('离线模式：数据已更新到内存');
+                    showAlert('successAlert', '数据已更新（离线模式）');
+                    updateSyncStatus('warning', '离线模式 - 数据未同步');
+                }
             } catch (error) {
                 console.error('保存数据失败:', error);
                 showAlert('errorAlert', '保存数据失败: ' + error.message);
+                updateSyncStatus('error', '数据同步失败');
             }
         }
 
@@ -1193,6 +1296,112 @@
             if (e.target.classList.contains('modal')) {
                 e.target.classList.remove('active');
             }
+        });
+
+        // 更新同步状态
+        function updateSyncStatus(status, message) {
+            const indicator = document.querySelector('.sync-indicator');
+            const text = document.getElementById('syncText');
+            
+            // 移除所有状态类
+            indicator.classList.remove('sync-success', 'sync-error', 'sync-warning', 'sync-syncing');
+            
+            // 添加新状态类
+            indicator.classList.add(`sync-${status}`);
+            text.textContent = message;
+        }
+
+        // 开始自动同步
+        function startAutoSync() {
+            // 每30秒检查一次数据更新
+            syncInterval = setInterval(async () => {
+                if (isOnline) {
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/data`);
+                        if (response.ok) {
+                            const data = await response.json();
+                            
+                            // 检查数据是否有变化
+                            const currentDataHash = JSON.stringify(accountsData) + JSON.stringify(categoriesData);
+                            const newDataHash = JSON.stringify(data.accounts) + JSON.stringify(data.categories);
+                            
+                            if (currentDataHash !== newDataHash) {
+                                accountsData = data.accounts || [];
+                                categoriesData = data.categories || [];
+                                
+                                // 更新界面
+                                updateDashboard();
+                                loadAccountsTable();
+                                loadCategoriesTable();
+                                loadCategoryOptions();
+                                
+                                updateSyncStatus('success', '数据已自动同步');
+                                console.log('数据已自动同步');
+                            }
+                        }
+                    } catch (error) {
+                        console.log('自动同步检查失败:', error);
+                        updateSyncStatus('warning', '同步检查失败');
+                    }
+                }
+            }, 30000); // 30秒
+        }
+
+        // 停止自动同步
+        function stopAutoSync() {
+            if (syncInterval) {
+                clearInterval(syncInterval);
+                syncInterval = null;
+            }
+        }
+
+        // 设置在线状态监听
+        function setupOnlineStatus() {
+            // 更新连接状态显示
+            const connectionStatus = document.getElementById('connectionStatus');
+            if (connectionStatus) {
+                connectionStatus.textContent = isOnline ? '在线' : '离线';
+            }
+            
+            window.addEventListener('online', () => {
+                isOnline = true;
+                updateSyncStatus('success', '已连接');
+                if (connectionStatus) {
+                    connectionStatus.textContent = '在线';
+                }
+                loadData(); // 重新加载数据
+                startAutoSync();
+            });
+
+            window.addEventListener('offline', () => {
+                isOnline = false;
+                updateSyncStatus('warning', '离线模式');
+                if (connectionStatus) {
+                    connectionStatus.textContent = '离线';
+                }
+                stopAutoSync();
+            });
+        }
+
+        // 手动同步数据
+        async function manualSync() {
+            if (!isOnline) {
+                showAlert('errorAlert', '当前处于离线模式，无法同步数据');
+                return;
+            }
+            
+            try {
+                updateSyncStatus('syncing', '正在同步...');
+                await loadData();
+                showAlert('successAlert', '数据同步成功');
+            } catch (error) {
+                showAlert('errorAlert', '数据同步失败: ' + error.message);
+            }
+        }
+
+        // 页面卸载时清理
+        window.addEventListener('beforeunload', () => {
+            stopAutoSync();
         });
     </script>
 </body>
