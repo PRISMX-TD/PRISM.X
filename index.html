@@ -3163,7 +3163,7 @@
                     // 获取当前文件的 SHA 值
                     const getResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.dataPath}`, {
                         headers: {
-                            'Authorization': `token ${GITHUB_CONFIG.token}`,
+                            'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
                             'Accept': 'application/vnd.github.v3+json'
                         }
                     });
@@ -3178,7 +3178,7 @@
                     const updateResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.dataPath}`, {
                         method: 'PUT',
                         headers: {
-                            'Authorization': `token ${GITHUB_CONFIG.token}`,
+                            'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
                             'Accept': 'application/vnd.github.v3+json',
                             'Content-Type': 'application/json'
                         },
