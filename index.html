@@ -3051,13 +3051,9 @@
                 }
             }, 3000); // 3秒后隐藏加载器
 
-            // GitHub API 配置
-            const GITHUB_CONFIG = {
-                token: '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',
-                owner: 'PRISMX-TD',
-                repo: 'PRISM.X',
-                branch: 'main',
-                dataPath: 'data/accounts.json'
+            // API 配置
+            const API_CONFIG = {
+                baseUrl: 'https://prism-x.vercel.app'
             };
 
             // 账户数据管理
@@ -3067,29 +3063,29 @@
                 system: {}
             };
 
-            // 从 GitHub 仓库加载数据
-            async function loadDataFromGitHub() {
+            // 从 API 加载数据
+            async function loadDataFromAPI() {
                 try {
-                    const response = await fetch(`https://raw.githubusercontent.com/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/${GITHUB_CONFIG.branch}/${GITHUB_CONFIG.dataPath}`);
+                    const response = await fetch(`${API_CONFIG.baseUrl}/api/data`);
                     if (response.ok) {
                         const data = await response.json();
                         return data;
                     }
                 } catch (error) {
-                    console.error('从 GitHub 加载数据失败:', error);
+                    console.error('从 API 加载数据失败:', error);
                 }
                 return null;
             }
 
             // 加载账户数据
             async function loadAccountsData() {
-                // 优先从 GitHub 仓库读取最新数据
-                const githubData = await loadDataFromGitHub();
-                if (githubData) {
-                    accountsData = githubData;
+                // 优先从 API 读取最新数据
+                const apiData = await loadDataFromAPI();
+                if (apiData) {
+                    accountsData = apiData;
                     // 同时保存到本地存储作为备份
-                    localStorage.setItem('prismAccountsData', JSON.stringify(githubData));
-                    console.log('从 GitHub 仓库加载账户数据');
+                    localStorage.setItem('prismAccountsData', JSON.stringify(apiData));
+                    console.log('从 API 加载账户数据');
                     updateAccountsDisplay();
                     return;
                 }
