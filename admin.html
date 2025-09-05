@@ -619,13 +619,11 @@
             }
         }
 
-        // GitHub API 配置
+        // GitHub Issues 配置
         const GITHUB_CONFIG = {
-            token: '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',
             owner: 'PRISMX-TD',
             repo: 'PRISM.X',
-            branch: 'main',
-            dataPath: 'data/accounts.json'
+            dataIssueTitle: 'PRISM X Accounts Data'
         };
 
         // 账户数据管理器
@@ -654,75 +652,109 @@
                 this.editingIndex = -1;
             }
 
-            // 从 GitHub 仓库加载数据
-            async loadDataFromGitHub() {
+            // 从 GitHub Issues 加载数据
+            async loadDataFromGitHubIssues() {
                 try {
-                    const response = await fetch(`https://raw.githubusercontent.com/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/${GITHUB_CONFIG.branch}/${GITHUB_CONFIG.dataPath}`);
+                    const response = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/issues`);
                     if (response.ok) {
-                        const data = await response.json();
-                        return data;
+                        const issues = await response.json();
+                        const dataIssue = issues.find(issue => issue.title === GITHUB_CONFIG.dataIssueTitle);
+                        if (dataIssue && dataIssue.body) {
+                            // 从 Issue 的 body 中提取 JSON 数据
+                            const jsonMatch = dataIssue.body.match(/```json\n([\s\S]*?)\n```/);
+                            if (jsonMatch) {
+                                const data = JSON.parse(jsonMatch[1]);
+                                return data;
+                            }
+                        }
                     }
                 } catch (error) {
-                    console.error('从 GitHub 加载数据失败:', error);
+                    console.error('从 GitHub Issues 加载数据失败:', error);
                 }
                 return null;
             }
 
-            // 保存数据到 GitHub
-            async saveDataToGitHub(data) {
+            // 保存数据到 GitHub Issues
+            async saveDataToGitHubIssues(data) {
                 try {
-                    // 获取当前文件的 SHA 值
-                    const getResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.dataPath}`, {
-                        headers: {
-                            'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
-                            'Accept': 'application/vnd.github.v3+json'
-                        }
-                    });
-
-                    let sha = null;
-                    if (getResponse.ok) {
-                        const fileInfo = await getResponse.json();
-                        sha = fileInfo.sha;
-                    }
-
-                    // 更新文件
-                    const updateResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.dataPath}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
-                            'Accept': 'application/vnd.github.v3+json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: `Update accounts data - ${new Date().toLocaleString()}`,
-                            content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
-                            sha: sha
-                        })
-                    });
-
-                    if (updateResponse.ok) {
-                        console.log('数据已成功保存到 GitHub');
-                        return true;
-                    } else {
-                        const error = await updateResponse.json();
-                        console.error('保存到 GitHub 失败:', error);
+                    // 获取现有的 Issues
+                    const getResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/issues`);
+                    if (!getResponse.ok) {
+                        console.error('获取 Issues 失败');
                         return false;
                     }
+
+                    const issues = await getResponse.json();
+                    const existingIssue = issues.find(issue => issue.title === GITHUB_CONFIG.dataIssueTitle);
+
+                    const issueBody = `# PRISM X 账户数据
+
+这是 PRISM X 系统的账户数据存储。请勿手动修改此 Issue 的内容。
+
+\`\`\`json
+${JSON.stringify(data, null, 2)}
+\`\`\`
+
+---
+*最后更新：${new Date().toLocaleString()}*`;
+
+                    if (existingIssue) {
+                        // 更新现有 Issue
+                        const updateResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/issues/${existingIssue.number}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Accept': 'application/vnd.github.v3+json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                body: issueBody
+                            })
+                        });
+
+                        if (updateResponse.ok) {
+                            console.log('数据已成功保存到 GitHub Issues');
+                            return true;
+                        } else {
+                            console.error('更新 Issue 失败');
+                            return false;
+                        }
+                    } else {
+                        // 创建新 Issue
+                        const createResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/issues`, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/vnd.github.v3+json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                title: GITHUB_CONFIG.dataIssueTitle,
+                                body: issueBody
+                            })
+                        });
+
+                        if (createResponse.ok) {
+                            console.log('数据已成功保存到 GitHub Issues');
+                            return true;
+                        } else {
+                            console.error('创建 Issue 失败');
+                            return false;
+                        }
+                    }
                 } catch (error) {
-                    console.error('保存到 GitHub 时发生错误:', error);
+                    console.error('保存到 GitHub Issues 时发生错误:', error);
                     return false;
                 }
             }
 
             // 加载数据
             async loadData() {
-                // 优先从 GitHub 仓库读取最新数据
-                const githubData = await this.loadDataFromGitHub();
+                // 优先从 GitHub Issues 读取最新数据
+                const githubData = await this.loadDataFromGitHubIssues();
                 if (githubData) {
                     this.accountsData = { ...this.accountsData, ...githubData };
                     // 同时保存到本地存储作为备份
                     localStorage.setItem('prismAccountsData', JSON.stringify(githubData));
-                    console.log('从 GitHub 仓库加载数据');
+                    console.log('从 GitHub Issues 加载数据');
                     return;
                 }
 
@@ -764,18 +796,18 @@
                 localStorage.setItem('prismAccountsData', JSON.stringify(this.accountsData));
                 console.log('数据已保存到本地存储');
                 
-                // 同时保存到 GitHub
-                console.log('开始保存到 GitHub...');
-                const githubSuccess = await this.saveDataToGitHub(this.accountsData);
-                console.log('GitHub 保存结果:', githubSuccess);
+                // 保存到 GitHub Issues
+                console.log('开始保存到 GitHub Issues...');
+                const githubSuccess = await this.saveDataToGitHubIssues(this.accountsData);
+                console.log('GitHub Issues 保存结果:', githubSuccess);
                 
                 // 更新显示
                 this.updateDisplay();
                 
                 if (githubSuccess) {
-                    showAlert('数据已保存到 GitHub！其他用户刷新页面即可看到更新', 'success');
+                    showAlert('数据已保存到 GitHub Issues！其他用户刷新页面即可看到更新', 'success');
                 } else {
-                    showAlert('数据已保存到本地存储，但 GitHub 同步失败', 'warning');
+                    showAlert('数据已保存到本地存储，但 GitHub Issues 同步失败', 'warning');
                 }
                 
                 // 触发存储事件（用于跨页面同步）
