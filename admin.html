@@ -753,15 +753,20 @@
 
             // 保存数据
             async saveData() {
+                console.log('开始保存数据...');
+                
                 this.accountsData.system.lastUpdate = new Date().toISOString();
                 this.accountsData.system.totalAccounts = this.accountsData.accounts.length;
                 this.accountsData.system.activeAccounts = this.accountsData.accounts.filter(acc => acc.status === 'active').length;
                 
                 // 保存到本地存储
                 localStorage.setItem('prismAccountsData', JSON.stringify(this.accountsData));
+                console.log('数据已保存到本地存储');
                 
                 // 同时保存到 GitHub
+                console.log('开始保存到 GitHub...');
                 const githubSuccess = await this.saveDataToGitHub(this.accountsData);
+                console.log('GitHub 保存结果:', githubSuccess);
                 
                 // 更新显示
                 this.updateDisplay();
@@ -773,10 +778,12 @@
                 }
                 
                 // 触发存储事件（用于跨页面同步）
+                console.log('触发存储事件...');
                 window.dispatchEvent(new StorageEvent('storage', {
                     key: 'prismAccountsData',
                     newValue: JSON.stringify(this.accountsData)
                 }));
+                console.log('存储事件已触发');
             }
 
             // 添加账户
