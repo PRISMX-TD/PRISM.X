@@ -2748,7 +2748,7 @@
         <!-- 内容展示区域 -->
         <div class="content-area" id="contentArea">
             <!-- P - Precision -->
-            <section class="letter-section">
+            <section class="letter-section" id="precision">
                 <div class="letter-content">
                     <div class="section-letter">P</div>
                     <h2 class="section-title">Precision 精准</h2>
@@ -3983,6 +3983,270 @@
             // ===== 页面功能增强结束 =====
         });
     </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">PRISM X</h3>
+                    <p class="footer-description">
+                        专业的量化交易账户管理系统，为投资者提供全方位的账户监控和分析服务。
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link" title="小红书">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="2" y="2" width="20" height="20" rx="4" fill="#FF2442"/>
+                                <text x="12" y="16" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">小红书</text>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" title="QQ">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <!-- 企鹅身体 -->
+                                <ellipse cx="12" cy="15" rx="6" ry="8" fill="#2c2c2c"/>
+                                <!-- 企鹅头部 -->
+                                <circle cx="12" cy="8" r="5" fill="#2c2c2c"/>
+                                <!-- 白色腹部 -->
+                                <ellipse cx="12" cy="15" rx="4" ry="6" fill="white"/>
+                                <!-- 眼睛 -->
+                                <circle cx="10" cy="7" r="1.5" fill="white"/>
+                                <circle cx="14" cy="7" r="1.5" fill="white"/>
+                                <circle cx="10" cy="7" r="0.8" fill="#2c2c2c"/>
+                                <circle cx="14" cy="7" r="0.8" fill="#2c2c2c"/>
+                                <!-- 嘴巴 -->
+                                <ellipse cx="12" cy="9" rx="1" ry="0.8" fill="#f59e0b"/>
+                                <!-- 围巾 -->
+                                <rect x="8" y="11" width="8" height="2" fill="#ef4444"/>
+                                <path d="M8 13 L6 15 L8 15 Z" fill="#ef4444"/>
+                                <path d="M16 13 L18 15 L16 15 Z" fill="#ef4444"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <div class="footer-buttons">
+                        <a href="#precision" class="footer-btn">价值主张</a>
+                        <a href="#accountsSection" class="footer-btn">账户表现</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p class="footer-copyright">
+                        © 2025 PRISM X. 保留所有权利。
+                    </p>
+                    <p class="footer-disclaimer">
+                        免责声明：本平台提供的所有信息仅供参考，不构成投资建议。投资有风险，入市需谨慎。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        /* Footer 样式 */
+        .footer {
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 26, 0.95) 100%);
+            border-top: 1px solid rgba(139, 92, 246, 0.3);
+            margin-top: 80px;
+            padding: 60px 0 0;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.6), transparent);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3.footer-title {
+            font-family: 'LASER', 'Arial Black', sans-serif;
+            font-size: 1.8rem;
+            color: #8b5cf6;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .footer-section h4.footer-subtitle {
+            color: #ffffff;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .footer-description {
+            color: #cccccc;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            max-width: 300px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            color: #8b5cf6;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .social-link:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: #8b5cf6;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #cccccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: #8b5cf6;
+        }
+
+        .footer-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .footer-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            color: #8b5cf6;
+            text-decoration: none;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .footer-btn:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: #8b5cf6;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(139, 92, 246, 0.2);
+            padding: 30px 0;
+            background: transparent;
+        }
+
+        .footer-bottom-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 12px;
+        }
+
+        .footer-copyright {
+            color: #999;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .footer-disclaimer {
+            color: #666;
+            margin: 0;
+            font-size: 12px;
+            line-height: 1.4;
+            max-width: 500px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .footer-container {
+                padding: 0 20px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                text-align: center;
+            }
+
+            .footer-social {
+                justify-content: center;
+            }
+
+            .footer-buttons {
+                align-items: center;
+            }
+
+            .footer-disclaimer {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .footer {
+                padding: 40px 0 0;
+            }
+
+            .footer-section h3.footer-title {
+                font-size: 1.5rem;
+            }
+
+            .footer-social {
+                gap: 10px;
+            }
+
+            .social-link {
+                width: 35px;
+                height: 35px;
+            }
+        }
+    </style>
 </body>
-</html>
 </html>
