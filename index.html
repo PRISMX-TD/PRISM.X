@@ -3327,6 +3327,7 @@
 
             // 监听本地存储变化，实时同步数据
             window.addEventListener('storage', function(e) {
+                console.log('存储事件触发:', e.key, e.newValue ? '有新数据' : '无新数据');
                 if (e.key === 'prismAccountsData') {
                     console.log('检测到本地存储数据变化，重新加载数据');
                     loadAccountsData();
