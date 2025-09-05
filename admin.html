@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://api.github.com https://raw.githubusercontent.com; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
     <title>PRISM X 管理后台</title>
     <style>
         * {
@@ -620,7 +621,7 @@
 
         // GitHub API 配置
         const GITHUB_CONFIG = {
-            token: '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',
+            token: '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',
             owner: 'PRISMX-TD',
             repo: 'PRISM.X',
             branch: 'main',
