@@ -618,6 +618,15 @@
             }
         }
 
+        // GitHub API 配置
+        const GITHUB_CONFIG = {
+            token: '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',
+            owner: 'PRISMX-TD',
+            repo: 'PRISM.X',
+            branch: 'main',
+            dataPath: 'data/accounts.json'
+        };
+
         // 账户数据管理器
         class AccountDataManager {
             constructor() {
@@ -644,9 +653,79 @@
                 this.editingIndex = -1;
             }
 
+            // 从 GitHub 仓库加载数据
+            async loadDataFromGitHub() {
+                try {
+                    const response = await fetch(`https://raw.githubusercontent.com/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/${GITHUB_CONFIG.branch}/${GITHUB_CONFIG.dataPath}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        return data;
+                    }
+                } catch (error) {
+                    console.error('从 GitHub 加载数据失败:', error);
+                }
+                return null;
+            }
+
+            // 保存数据到 GitHub
+            async saveDataToGitHub(data) {
+                try {
+                    // 获取当前文件的 SHA 值
+                    const getResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.dataPath}`, {
+                        headers: {
+                            'Authorization': `token ${GITHUB_CONFIG.token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+
+                    let sha = null;
+                    if (getResponse.ok) {
+                        const fileInfo = await getResponse.json();
+                        sha = fileInfo.sha;
+                    }
+
+                    // 更新文件
+                    const updateResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.dataPath}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${GITHUB_CONFIG.token}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: `Update accounts data - ${new Date().toLocaleString()}`,
+                            content: btoa(JSON.stringify(data, null, 2)),
+                            sha: sha
+                        })
+                    });
+
+                    if (updateResponse.ok) {
+                        console.log('数据已成功保存到 GitHub');
+                        return true;
+                    } else {
+                        const error = await updateResponse.json();
+                        console.error('保存到 GitHub 失败:', error);
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('保存到 GitHub 时发生错误:', error);
+                    return false;
+                }
+            }
+
             // 加载数据
             async loadData() {
-                // 优先从本地存储读取数据
+                // 优先从 GitHub 仓库读取最新数据
+                const githubData = await this.loadDataFromGitHub();
+                if (githubData) {
+                    this.accountsData = { ...this.accountsData, ...githubData };
+                    // 同时保存到本地存储作为备份
+                    localStorage.setItem('prismAccountsData', JSON.stringify(githubData));
+                    console.log('从 GitHub 仓库加载数据');
+                    return;
+                }
+
+                // 如果 GitHub 数据不可用，尝试从本地存储读取
                 const localData = localStorage.getItem('prismAccountsData');
                 if (localData) {
                     try {
@@ -657,7 +736,7 @@
                         console.log('本地存储数据解析失败，使用默认数据');
                     }
                 } else {
-                    // 如果没有本地数据，尝试从文件读取
+                    // 最后尝试从本地文件读取
                     try {
                         const response = await fetch('./data/accounts.json');
                         if (response.ok) {
@@ -673,7 +752,7 @@
             }
 
             // 保存数据
-            saveData() {
+            async saveData() {
                 this.accountsData.system.lastUpdate = new Date().toISOString();
                 this.accountsData.system.totalAccounts = this.accountsData.accounts.length;
                 this.accountsData.system.activeAccounts = this.accountsData.accounts.filter(acc => acc.status === 'active').length;
@@ -681,9 +760,17 @@
                 // 保存到本地存储
                 localStorage.setItem('prismAccountsData', JSON.stringify(this.accountsData));
                 
+                // 同时保存到 GitHub
+                const githubSuccess = await this.saveDataToGitHub(this.accountsData);
+                
                 // 更新显示
                 this.updateDisplay();
-                this.showAlert('数据已保存到本地存储！请刷新index.html页面查看更新', 'success');
+                
+                if (githubSuccess) {
+                    this.showAlert('数据已保存到 GitHub！其他用户刷新页面即可看到更新', 'success');
+                } else {
+                    this.showAlert('数据已保存到本地存储，但 GitHub 同步失败', 'warning');
+                }
                 
                 // 触发存储事件（用于跨页面同步）
                 window.dispatchEvent(new StorageEvent('storage', {
