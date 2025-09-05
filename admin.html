@@ -620,7 +620,7 @@
 
         // GitHub API 配置
         const GITHUB_CONFIG = {
-            token: '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',
+            token: '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',
             owner: 'PRISMX-TD',
             repo: 'PRISM.X',
             branch: 'main',
@@ -694,7 +694,7 @@
                         },
                         body: JSON.stringify({
                             message: `Update accounts data - ${new Date().toLocaleString()}`,
-                            content: btoa(JSON.stringify(data, null, 2)),
+                            content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
                             sha: sha
                         })
                     });
@@ -772,9 +772,9 @@
                 this.updateDisplay();
                 
                 if (githubSuccess) {
-                    this.showAlert('数据已保存到 GitHub！其他用户刷新页面即可看到更新', 'success');
+                    showAlert('数据已保存到 GitHub！其他用户刷新页面即可看到更新', 'success');
                 } else {
-                    this.showAlert('数据已保存到本地存储，但 GitHub 同步失败', 'warning');
+                    showAlert('数据已保存到本地存储，但 GitHub 同步失败', 'warning');
                 }
                 
                 // 触发存储事件（用于跨页面同步）
