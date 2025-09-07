@@ -66,22 +66,45 @@
         async function testAPI() {
             addResult('🌐 测试 API 连接', '正在连接...', 'info');
             
+            // 先测试最简单的test端点
+            try {
+                const startTime = Date.now();
+                const testResponse = await fetch(`${API_BASE_URL}/test`);
+                const endTime = Date.now();
+                
+                if (testResponse.ok) {
+                    const testData = await testResponse.json();
+                    addResult('✅ 测试API连接成功', 
+                        `状态码: ${testResponse.status}\n响应时间: ${endTime - startTime}ms\n响应: ${JSON.stringify(testData)}\nURL: ${API_BASE_URL}/test`, 
+                        'success');
+                } else {
+                    addResult('❌ 测试API连接失败', 
+                        `状态码: ${testResponse.status}\n状态文本: ${testResponse.statusText}\nURL: ${API_BASE_URL}/test`, 
+                        'error');
+                }
+            } catch (error) {
+                addResult('❌ 测试API连接错误', 
+                    `错误: ${error.message}\nURL: ${API_BASE_URL}/test`, 
+                    'error');
+            }
+            
+            // 然后测试data端点
             try {
                 const startTime = Date.now();
                 const response = await fetch(`${API_BASE_URL}/data`);
                 const endTime = Date.now();
                 
                 if (response.ok) {
-                    addResult('✅ API 连接成功', 
+                    addResult('✅ 数据API连接成功', 
                         `状态码: ${response.status}\n响应时间: ${endTime - startTime}ms\nURL: ${API_BASE_URL}/data`, 
                         'success');
                 } else {
-                    addResult('❌ API 连接失败', 
+                    addResult('❌ 数据API连接失败', 
                         `状态码: ${response.status}\n状态文本: ${response.statusText}\nURL: ${API_BASE_URL}/data`, 
                         'error');
                 }
             } catch (error) {
-                addResult('❌ API 连接错误', 
+                addResult('❌ 数据API连接错误', 
                     `错误: ${error.message}\nURL: ${API_BASE_URL}/data`, 
                     'error');
             }
