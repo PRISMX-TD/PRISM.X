@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRISM X 管理后台</title>
+    <style>
+        /* 加载LASER字体 */
+        @font-face {
+            font-family: 'LASER';
+            src: url('laser.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #ffffff;
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* 顶部导航栏 */
+        .admin-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-bottom: 1px solid #333;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .admin-title {
+            font-family: 'LASER', 'Arial Black', sans-serif;
+            font-size: 2rem;
+            color: #8b5cf6;
+            letter-spacing: 2px;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            margin-left: 20px;
+        }
+
+        .sync-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .sync-success {
+            background: #22c55e;
+        }
+
+        .sync-error {
+            background: #ef4444;
+        }
+
+        .sync-warning {
+            background: #f59e0b;
+        }
+
+        .sync-syncing {
+            background: #8b5cf6;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid #8b5cf6;
+            color: #8b5cf6;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: #8b5cf6;
+            color: #0a0a0a;
+            transform: translateY(-2px);
+        }
+
+        /* 主内容区域 */
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: #8b5cf6;
+            margin-bottom: 20px;
+            font-family: 'LASER', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        /* 表格样式 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        .data-table th {
+            background: #2a2a2a;
+            color: #8b5cf6;
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background: #1a1a1a;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #22c55e;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #16a34a;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cccccc;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: #8b5cf6;
+            font-family: 'LASER', sans-serif;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #8b5cf6;
+        }
+
+        /* 状态指示器 */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #22c55e;
+            color: white;
+        }
+
+        .status-inactive {
+            background: #6b7280;
+            color: white;
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            color: #8b5cf6;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #cccccc;
+            font-size: 14px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .admin-header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .admin-container {
+                padding: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .data-table {
+                font-size: 12px;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 10px 8px;
+            }
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #333;
+            border-radius: 50%;
+            border-top-color: #8b5cf6;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 成功/错误提示 */
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid #22c55e;
+            color: #22c55e;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 登录页面样式 */
+        .login-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2a2a2a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .login-title {
+            font-family: 'LASER', 'Arial Black', sans-serif;
+            font-size: 3rem;
+            color: #8b5cf6;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .login-subtitle {
+            color: #cccccc;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .login-form-container {
+            margin-bottom: 40px;
+        }
+
+        .login-card {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 16px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-form-title {
+            color: #ffffff;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .login-description {
+            color: #cccccc;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .login-footer {
+            text-align: center;
+        }
+
+        .login-footer-text {
+            color: #666;
+            font-size: 12px;
+        }
+
+        /* 管理后台界面 */
+        .admin-interface {
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div id="loginPage" class="login-page">
+        <div class="login-container">
+            <div class="login-header">
+                <h1 class="login-title">PRISM X</h1>
+                <p class="login-subtitle">量化交易管理系统</p>
+            </div>
+            
+            <div class="login-form-container">
+                <div class="login-card">
+                    <h2 class="login-form-title">管理员登录</h2>
+                    <p class="login-description">请输入管理员密码以访问系统</p>
+                    
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label class="form-label">管理员密码</label>
+                            <input type="password" class="form-input" id="loginPasswordInput" name="password" required placeholder="请输入密码...">
+                        </div>
+                        <div class="alert alert-error" id="loginErrorAlert" style="display: none;"></div>
+                        <button type="submit" class="btn btn-primary login-btn">登录系统</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="login-footer">
+                <p class="login-footer-text">© 2025 PRISM X. 保留所有权利。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 管理后台界面 -->
+    <div id="adminInterface" class="admin-interface" style="display: none;">
+        <!-- 顶部导航栏 -->
+        <header class="admin-header">
+            <div style="display: flex; align-items: center;">
+                <h1 class="admin-title">PRISM X 管理后台</h1>
+                <div class="sync-status" id="syncStatus">
+                    <div class="sync-indicator sync-success"></div>
+                    <span id="syncText">已连接</span>
+                </div>
+            </div>
+            <nav class="admin-nav">
+                <button class="nav-btn active" onclick="showSection('dashboard')">仪表板</button>
+                <button class="nav-btn" onclick="showSection('accounts')">账户管理</button>
+                <button class="nav-btn" onclick="showSection('categories')">分类管理</button>
+                <button class="nav-btn" onclick="showSection('settings')">系统设置</button>
+                <button class="nav-btn" onclick="showSection('data')">数据管理</button>
+            </nav>
+        </header>
+
+        <!-- 主内容区域 -->
+        <div class="admin-container">
+        <!-- 仪表板 -->
+        <section id="dashboard" class="section active">
+            <div class="card">
+                <h2 class="card-title">系统概览</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalAccounts">-</div>
+                        <div class="stat-label">总账户数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="activeAccounts">-</div>
+                        <div class="stat-label">活跃账户</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalBalance">-</div>
+                        <div class="stat-label">总资金</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgGain">-</div>
+                        <div class="stat-label">平均收益</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">最近活动</h2>
+                <div id="recentActivity">
+                    <p style="color: #666; text-align: center; padding: 40px;">暂无活动记录</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 账户管理 -->
+        <section id="accounts" class="section">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 class="card-title">账户管理</h2>
+                    <button class="btn btn-primary" onclick="openAccountModal()">添加账户</button>
+                </div>
+                
+                <div class="alert alert-success" id="successAlert"></div>
+                <div class="alert alert-error" id="errorAlert"></div>
+                <table class="data-table" id="accountsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>账户名称</th>
+                            <th>分类</th>
+                            <th>余额</th>
+                            <th>收益</th>
+                            <th>回撤</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="accountsTableBody">
+                        <!-- 账户数据将通过JavaScript动态加载 -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 分类管理 -->
+        <section id="categories" class="section">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 class="card-title">分类管理</h2>
+                    <button class="btn btn-primary" onclick="openCategoryModal()">添加分类</button>
+                </div>
+                
+                <div class="alert alert-success" id="categorySuccessAlert"></div>
+                <div class="alert alert-error" id="categoryErrorAlert"></div>
+                
+                <table class="data-table" id="categoriesTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>分类名称</th>
+                            <th>描述</th>
+                            <th>颜色</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoriesTableBody">
+                        <!-- 分类数据将通过JavaScript动态加载 -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 系统设置 -->
+        <section id="settings" class="section">
+            <div class="card">
+                <h2 class="card-title">系统设置</h2>
+                
+                <div class="alert alert-success" id="settingsSuccessAlert"></div>
+                <div class="alert alert-error" id="settingsErrorAlert"></div>
+                
+                <form id="settingsForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">默认货币</label>
+                            <select class="form-input" id="defaultCurrency" name="currency">
+                                <option value="USD">美元 (USD)</option>
+                                <option value="EUR">欧元 (EUR)</option>
+                                <option value="CNY">人民币 (CNY)</option>
+                                <option value="JPY">日元 (JPY)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">更新间隔 (小时)</label>
+                            <input type="number" class="form-input" id="updateInterval" name="updateInterval" min="1" max="168" value="24">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">显示模式</label>
+                            <select class="form-input" id="displayMode" name="displayMode">
+                                <option value="grid">网格模式</option>
+                                <option value="list">列表模式</option>
+                                <option value="card">卡片模式</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">显示设置</label>
+                            <div style="margin-top: 10px;">
+                                <label style="display: flex; align-items: center; gap: 8px; color: #cccccc;">
+                                    <input type="checkbox" id="showInactive" name="showInactive">
+                                    显示非活跃账户
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" onclick="saveSettings()">保存设置</button>
+                        <button type="button" class="btn btn-secondary" onclick="resetSettings()">重置为默认</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- 数据管理 -->
+        <section id="data" class="section">
+            <div class="card">
+                <h2 class="card-title">数据管理</h2>
+                
+                <div class="alert alert-success" id="dataSuccessAlert"></div>
+                <div class="alert alert-error" id="dataErrorAlert"></div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <h3 style="color: #8b5cf6; margin-bottom: 15px;">数据同步</h3>
+                        <p style="color: #cccccc; margin-bottom: 15px;">手动同步云端数据</p>
+                        <button class="btn btn-primary" onclick="manualSync()">同步数据</button>
+                    </div>
+                    <div class="form-group">
+                        <h3 style="color: #8b5cf6; margin-bottom: 15px;">数据备份</h3>
+                        <p style="color: #cccccc; margin-bottom: 15px;">导出当前所有数据为JSON文件</p>
+                        <button class="btn btn-primary" onclick="exportData()">导出数据</button>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <h3 style="color: #8b5cf6; margin-bottom: 15px;">数据导入</h3>
+                        <p style="color: #cccccc; margin-bottom: 15px;">从JSON文件导入数据</p>
+                        <input type="file" id="importFile" accept=".json" style="margin-bottom: 10px;">
+                        <button class="btn btn-success" onclick="importData()">导入数据</button>
+                    </div>
+                    <div class="form-group">
+                        <h3 style="color: #8b5cf6; margin-bottom: 15px;">连接状态</h3>
+                        <p style="color: #cccccc; margin-bottom: 15px;">当前状态: <span id="connectionStatus">检查中...</span></p>
+                        <p style="color: #666; font-size: 12px;">自动同步每30秒检查一次更新</p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #333;">
+                    <h3 style="color: #ef4444; margin-bottom: 15px;">危险操作</h3>
+                    <p style="color: #cccccc; margin-bottom: 15px;">以下操作将永久删除数据，请谨慎操作</p>
+                    <button class="btn btn-danger" onclick="clearAllData()">清空所有数据</button>
+                </div>
+            </div>
+        </section>
+        </div>
+    </div>
+
+    <!-- 添加/编辑账户模态框 -->
+    <div id="accountModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="accountModalTitle">添加账户</h3>
+                <button class="close-btn" onclick="closeAccountModal()">&times;</button>
+            </div>
+            <form id="accountForm">
+                <div class="form-group">
+                    <label class="form-label">账户ID</label>
+                    <input type="text" class="form-input" id="accountId" name="id" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">账户名称</label>
+                    <input type="text" class="form-input" id="accountName" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">账户图标</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="text" class="form-input" id="accountEmoji" name="emoji" placeholder="选择或输入emoji" style="flex: 1;" maxlength="2">
+                        <button type="button" class="btn btn-secondary" onclick="openEmojiPicker()">选择</button>
+                    </div>
+                    <div id="emojiPreview" style="margin-top: 10px; display: none;">
+                        <div id="emojiPreviewDisplay" style="width: 60px; height: 60px; border-radius: 50%; background: #2a2a2a; border: 2px solid #8b5cf6; display: flex; align-items: center; justify-content: center; font-size: 24px;"></div>
+                    </div>
+                    <div id="emojiPicker" style="display: none; margin-top: 10px; padding: 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px;">
+                        <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; max-height: 200px; overflow-y: auto;">
+                            <div class="emoji-option" data-emoji="🏹" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🏹</div>
+                            <div class="emoji-option" data-emoji="🔥" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🔥</div>
+                            <div class="emoji-option" data-emoji="🐍" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🐍</div>
+                            <div class="emoji-option" data-emoji="📊" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">📊</div>
+                            <div class="emoji-option" data-emoji="💰" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">💰</div>
+                            <div class="emoji-option" data-emoji="⚡" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">⚡</div>
+                            <div class="emoji-option" data-emoji="🎯" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🎯</div>
+                            <div class="emoji-option" data-emoji="🚀" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🚀</div>
+                            <div class="emoji-option" data-emoji="💎" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">💎</div>
+                            <div class="emoji-option" data-emoji="⭐" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">⭐</div>
+                            <div class="emoji-option" data-emoji="🌟" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🌟</div>
+                            <div class="emoji-option" data-emoji="🔥" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🔥</div>
+                            <div class="emoji-option" data-emoji="💪" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">💪</div>
+                            <div class="emoji-option" data-emoji="🎪" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🎪</div>
+                            <div class="emoji-option" data-emoji="🎨" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🎨</div>
+                            <div class="emoji-option" data-emoji="🎭" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🎭</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">分类</label>
+                    <select class="form-input" id="accountCategory" name="category" required>
+                        <option value="">请选择分类</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">初始余额</label>
+                        <input type="number" class="form-input" id="accountInitialBalance" name="initialBalance" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">当前余额</label>
+                        <input type="number" class="form-input" id="accountBalance" name="balance" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">收益 (%)</label>
+                        <input type="number" class="form-input" id="accountGain" name="gain" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">回撤 (%)</label>
+                        <input type="number" class="form-input" id="accountDrawdown" name="drawdown" step="0.1">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">日收益 (%)</label>
+                        <input type="number" class="form-input" id="accountDaily" name="daily" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">月收益 (%)</label>
+                        <input type="number" class="form-input" id="accountMonthly" name="monthly" step="0.1">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">交易次数</label>
+                        <input type="number" class="form-input" id="accountTrades" name="trades">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">胜率 (%)</label>
+                        <input type="number" class="form-input" id="accountWinRate" name="winRate" step="0.1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">状态</label>
+                    <select class="form-input" id="accountStatus" name="status">
+                        <option value="active">活跃</option>
+                        <option value="inactive">非活跃</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">描述</label>
+                    <textarea class="form-input form-textarea" id="accountDescription" name="description" placeholder="输入账户描述..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">账户标签</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <input type="text" class="form-input" id="accountTags" name="tags" placeholder="输入标签，用逗号分隔" style="flex: 1;">
+                        <button type="button" class="btn btn-secondary" onclick="addTagFromInput()">添加</button>
+                    </div>
+                    <div id="tagsPreview" style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+                        <!-- 标签预览将在这里显示 -->
+                    </div>
+                    <div style="margin-top: 10px; font-size: 12px; color: #888;">
+                        常用标签：<span class="tag-suggestion" onclick="addSuggestedTag('高胜率')" style="cursor: pointer; color: #8b5cf6; text-decoration: underline;">高胜率</span> | 
+                        <span class="tag-suggestion" onclick="addSuggestedTag('低回撤')" style="cursor: pointer; color: #8b5cf6; text-decoration: underline;">低回撤</span> | 
+                        <span class="tag-suggestion" onclick="addSuggestedTag('稳定收益')" style="cursor: pointer; color: #8b5cf6; text-decoration: underline;">稳定收益</span> | 
+                        <span class="tag-suggestion" onclick="addSuggestedTag('马丁策略')" style="cursor: pointer; color: #8b5cf6; text-decoration: underline;">马丁策略</span> | 
+                        <span class="tag-suggestion" onclick="addSuggestedTag('趋势跟踪')" style="cursor: pointer; color: #8b5cf6; text-decoration: underline;">趋势跟踪</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary">保存</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAccountModal()">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 添加/编辑分类模态框 -->
+    <div id="categoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="categoryModalTitle">添加分类</h3>
+                <button class="close-btn" onclick="closeCategoryModal()">&times;</button>
+            </div>
+            <form id="categoryForm">
+                <div class="form-group">
+                    <label class="form-label">分类ID</label>
+                    <input type="text" class="form-input" id="categoryId" name="id" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">分类名称</label>
+                    <input type="text" class="form-input" id="categoryName" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">描述</label>
+                    <textarea class="form-input form-textarea" id="categoryDescription" name="description" placeholder="输入分类描述..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">颜色</label>
+                    <input type="color" class="form-input" id="categoryColor" name="color" value="#8b5cf6">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary">保存</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        // 全局变量
+        let accountsData = [];
+        let categoriesData = [];
+        let currentEditingAccount = null;
+        let currentEditingCategory = null;
+        let syncInterval = null;
+        let isOnline = navigator.onLine;
+        
+        // API配置
+        const API_BASE_URL = 'https://prism-x-t8gk.vercel.app/api';
+        
+        // 加密的密码 (Base64编码)
+        const ENCRYPTED_PASSWORD = 'cHJpc20jNiM5';
+        const SESSION_KEY = 'prism_admin_session';
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthentication();
+            
+            // 添加emoji相关事件监听器
+            const emojiInput = document.getElementById('accountEmoji');
+            
+            if (emojiInput) {
+                emojiInput.addEventListener('input', handleEmojiInput);
+            }
+            
+            // 添加标签相关事件监听器
+            const tagsInput = document.getElementById('accountTags');
+            
+            if (tagsInput) {
+                tagsInput.addEventListener('input', function() {
+                    const tags = this.value.split(',').map(tag => tag.trim()).filter(tag => tag);
+                    updateTagsPreview(tags);
+                });
+            }
+            
+            // 为emoji选择器添加点击事件
+            document.querySelectorAll('.emoji-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    selectEmoji(this.dataset.emoji);
+                });
+            });
+        });
+
+        // 显示指定部分
+        function showSection(sectionId) {
+            // 隐藏所有部分
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // 移除所有导航按钮的active类
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 显示指定部分
+            document.getElementById(sectionId).classList.add('active');
+            
+            // 激活对应的导航按钮
+            event.target.classList.add('active');
+            
+            // 根据部分加载相应数据
+            switch(sectionId) {
+                case 'dashboard':
+                    updateDashboard();
+                    break;
+                case 'accounts':
+                    loadAccountsTable();
+                    break;
+                case 'categories':
+                    loadCategoriesTable();
+                    break;
+                case 'settings':
+                    loadSettings();
+                    break;
+            }
+        }
+
+        // 加载数据
+        async function loadData() {
+            try {
+                if (isOnline) {
+                    // 从API加载数据
+                    const response = await fetch(`${API_BASE_URL}/data`);
+                    if (!response.ok) {
+                        throw new Error(`API请求失败: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    accountsData = data.accounts || [];
+                    categoriesData = data.categories || [];
+                    console.log('从API加载数据成功');
+                } else {
+                    // 离线模式：从本地文件加载
+                    const response = await fetch('data/accounts.json');
+                    const data = await response.json();
+                    accountsData = data.accounts || [];
+                    categoriesData = data.categories || [];
+                    console.log('离线模式：从本地文件加载数据');
+                }
+                
+                // 更新仪表板
+                updateDashboard();
+                
+                // 加载分类选项
+                loadCategoryOptions();
+                
+                // 更新同步状态
+                updateSyncStatus('success', '数据加载成功');
+            } catch (error) {
+                console.error('加载数据失败:', error);
+                showAlert('errorAlert', '加载数据失败: ' + error.message);
+                updateSyncStatus('error', '数据加载失败');
+            }
+        }
+
+        // 更新仪表板
+        function updateDashboard() {
+            const totalAccounts = accountsData.length;
+            const activeAccounts = accountsData.filter(acc => acc.status === 'active').length;
+            const totalBalance = accountsData.reduce((sum, acc) => sum + (acc.balance || 0), 0);
+            const avgGain = accountsData.length > 0 ? 
+                accountsData.reduce((sum, acc) => sum + (acc.gain || 0), 0) / accountsData.length : 0;
+
+            document.getElementById('totalAccounts').textContent = totalAccounts;
+            document.getElementById('activeAccounts').textContent = activeAccounts;
+            document.getElementById('totalBalance').textContent = '$' + totalBalance.toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('avgGain').textContent = avgGain.toFixed(1) + '%';
+        }
+
+        // 加载分类选项
+        function loadCategoryOptions() {
+            const categorySelect = document.getElementById('accountCategory');
+            categorySelect.innerHTML = '<option value="">请选择分类</option>';
+            
+            categoriesData.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name;
+                categorySelect.appendChild(option);
+            });
+        }
+
+        // 加载账户表格
+        function loadAccountsTable() {
+            const tbody = document.getElementById('accountsTableBody');
+            tbody.innerHTML = '';
+            
+            accountsData.forEach(account => {
+                const row = document.createElement('tr');
+                const category = categoriesData.find(cat => cat.id === account.category);
+                
+                row.innerHTML = `
+                    <td>${account.id}</td>
+                    <td>${account.name}</td>
+                    <td><span style="color: ${category?.color || '#8b5cf6'}">${category?.name || account.category}</span></td>
+                    <td>$${account.balance?.toLocaleString('en-US', {minimumFractionDigits: 2}) || '0.00'}</td>
+                    <td style="color: ${account.gain >= 0 ? '#22c55e' : '#ef4444'}">${account.gain?.toFixed(1) || '0.0'}%</td>
+                    <td style="color: #ef4444">${account.drawdown?.toFixed(1) || '0.0'}%</td>
+                    <td><span class="status-badge ${account.status === 'active' ? 'status-active' : 'status-inactive'}">${account.status === 'active' ? '活跃' : '非活跃'}</span></td>
+                    <td>
+                        <button class="btn btn-primary" onclick="editAccount('${account.id}')" style="padding: 5px 10px; font-size: 12px;">编辑</button>
+                        <button class="btn btn-danger" onclick="deleteAccount('${account.id}')" style="padding: 5px 10px; font-size: 12px;">删除</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // 加载分类表格
+        function loadCategoriesTable() {
+            const tbody = document.getElementById('categoriesTableBody');
+            tbody.innerHTML = '';
+            
+            categoriesData.forEach(category => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${category.id}</td>
+                    <td>${category.name}</td>
+                    <td>${category.description}</td>
+                    <td><span style="display: inline-block; width: 20px; height: 20px; background-color: ${category.color}; border-radius: 3px; vertical-align: middle;"></span> ${category.color}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="editCategory('${category.id}')" style="padding: 5px 10px; font-size: 12px;">编辑</button>
+                        <button class="btn btn-danger" onclick="deleteCategory('${category.id}')" style="padding: 5px 10px; font-size: 12px;">删除</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // 打开账户模态框
+        function openAccountModal(accountId = null) {
+            currentEditingAccount = accountId;
+            const modal = document.getElementById('accountModal');
+            const title = document.getElementById('accountModalTitle');
+            const form = document.getElementById('accountForm');
+            
+            if (accountId) {
+                title.textContent = '编辑账户';
+                const account = accountsData.find(acc => acc.id === accountId);
+                if (account) {
+                    document.getElementById('accountId').value = account.id;
+                    document.getElementById('accountName').value = account.name;
+                    document.getElementById('accountEmoji').value = account.emoji || '';
+                    document.getElementById('accountCategory').value = account.category;
+                    document.getElementById('accountInitialBalance').value = account.initialBalance || 0;
+                    document.getElementById('accountBalance').value = account.balance || 0;
+                    document.getElementById('accountGain').value = account.gain || 0;
+                    document.getElementById('accountDrawdown').value = account.drawdown || 0;
+                    document.getElementById('accountDaily').value = account.daily || 0;
+                    document.getElementById('accountMonthly').value = account.monthly || 0;
+                    document.getElementById('accountTrades').value = account.trades || 0;
+                    document.getElementById('accountWinRate').value = account.winRate || 0;
+                    document.getElementById('accountStatus').value = account.status || 'active';
+                    document.getElementById('accountDescription').value = account.description || '';
+                    document.getElementById('accountTags').value = account.tags ? account.tags.join(', ') : '';
+                    
+                    // 更新emoji预览
+                    updateEmojiPreview(account.emoji);
+                    // 更新标签预览
+                    updateTagsPreview(account.tags || []);
+                }
+            } else {
+                title.textContent = '添加账户';
+                form.reset();
+                // 清除emoji预览
+                updateEmojiPreview('');
+                // 清除标签预览
+                updateTagsPreview([]);
+            }
+            
+            modal.classList.add('active');
+        }
+
+        // 关闭账户模态框
+        function closeAccountModal() {
+            document.getElementById('accountModal').classList.remove('active');
+            currentEditingAccount = null;
+        }
+        
+        // 更新emoji预览
+        function updateEmojiPreview(emoji) {
+            const preview = document.getElementById('emojiPreview');
+            const previewDisplay = document.getElementById('emojiPreviewDisplay');
+            
+            if (emoji && emoji.trim() !== '') {
+                previewDisplay.textContent = emoji;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+        
+        // 处理emoji输入
+        function handleEmojiInput() {
+            const emojiInput = document.getElementById('accountEmoji');
+            const emoji = emojiInput.value.trim();
+            updateEmojiPreview(emoji);
+        }
+        
+        // 打开emoji选择器
+        function openEmojiPicker() {
+            const picker = document.getElementById('emojiPicker');
+            if (picker.style.display === 'none' || picker.style.display === '') {
+                picker.style.display = 'block';
+            } else {
+                picker.style.display = 'none';
+            }
+        }
+        
+        // 选择emoji
+        function selectEmoji(emoji) {
+            document.getElementById('accountEmoji').value = emoji;
+            updateEmojiPreview(emoji);
+            document.getElementById('emojiPicker').style.display = 'none';
+        }
+        
+        // 更新标签预览
+        function updateTagsPreview(tags) {
+            const preview = document.getElementById('tagsPreview');
+            preview.innerHTML = '';
+            
+            tags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag-preview';
+                tagElement.textContent = tag;
+                tagElement.style.cssText = `
+                    background: #8b5cf6;
+                    color: white;
+                    padding: 4px 8px;
+                    border-radius: 12px;
+                    font-size: 12px;
+                    display: inline-block;
+                    margin: 2px;
+                `;
+                preview.appendChild(tagElement);
+            });
+        }
+        
+        // 从输入框添加标签
+        function addTagFromInput() {
+            const input = document.getElementById('accountTags');
+            const tags = input.value.split(',').map(tag => tag.trim()).filter(tag => tag);
+            
+            if (tags.length > 0) {
+                updateTagsPreview(tags);
+            }
+        }
+        
+        // 添加建议标签
+        function addSuggestedTag(tag) {
+            const input = document.getElementById('accountTags');
+            const currentTags = input.value.split(',').map(t => t.trim()).filter(t => t);
+            
+            if (!currentTags.includes(tag)) {
+                currentTags.push(tag);
+                input.value = currentTags.join(', ');
+                updateTagsPreview(currentTags);
+            }
+        }
+
+        // 打开分类模态框
+        function openCategoryModal(categoryId = null) {
+            currentEditingCategory = categoryId;
+            const modal = document.getElementById('categoryModal');
+            const title = document.getElementById('categoryModalTitle');
+            const form = document.getElementById('categoryForm');
+            
+            if (categoryId) {
+                title.textContent = '编辑分类';
+                const category = categoriesData.find(cat => cat.id === categoryId);
+                if (category) {
+                    document.getElementById('categoryId').value = category.id;
+                    document.getElementById('categoryName').value = category.name;
+                    document.getElementById('categoryDescription').value = category.description;
+                    document.getElementById('categoryColor').value = category.color;
+                }
+            } else {
+                title.textContent = '添加分类';
+                form.reset();
+            }
+            
+            modal.classList.add('active');
+        }
+
+        // 关闭分类模态框
+        function closeCategoryModal() {
+            document.getElementById('categoryModal').classList.remove('active');
+            currentEditingCategory = null;
+        }
+
+        // 编辑账户
+        function editAccount(accountId) {
+            openAccountModal(accountId);
+        }
+
+        // 删除账户
+        function deleteAccount(accountId) {
+            if (confirm('确定要删除这个账户吗？此操作不可撤销。')) {
+                accountsData = accountsData.filter(acc => acc.id !== accountId);
+                saveData();
+                loadAccountsTable();
+                updateDashboard();
+                showAlert('successAlert', '账户删除成功');
+            }
+        }
+
+        // 编辑分类
+        function editCategory(categoryId) {
+            openCategoryModal(categoryId);
+        }
+
+        // 删除分类
+        function deleteCategory(categoryId) {
+            if (confirm('确定要删除这个分类吗？此操作不可撤销。')) {
+                categoriesData = categoriesData.filter(cat => cat.id !== categoryId);
+                saveData();
+                loadCategoriesTable();
+                loadCategoryOptions();
+                showAlert('categorySuccessAlert', '分类删除成功');
+            }
+        }
+
+        // 保存数据
+        async function saveData() {
+            try {
+                const data = {
+                    system: {
+                        version: "1.0",
+                        lastUpdate: new Date().toISOString(),
+                        totalAccounts: accountsData.length,
+                        activeAccounts: accountsData.filter(acc => acc.status === 'active').length
+                    },
+                    accounts: accountsData,
+                    categories: categoriesData,
+                    defaultSettings: {
+                        currency: document.getElementById('defaultCurrency')?.value || 'USD',
+                        updateInterval: parseInt(document.getElementById('updateInterval')?.value) || 24,
+                        displayMode: document.getElementById('displayMode')?.value || 'grid',
+                        showInactive: document.getElementById('showInactive')?.checked || false
+                    }
+                };
+                
+                // 首先保存到localStorage，确保index页面能立即获取到数据
+                localStorage.setItem('prismAccountsData', JSON.stringify(data));
+                console.log('✅ 数据已保存到localStorage:', data);
+                
+                if (isOnline) {
+                    // 在线模式：保存到API
+                    updateSyncStatus('syncing', '正在同步数据...');
+                    
+                    const response = await fetch(`${API_BASE_URL}/data`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`保存失败: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('数据保存成功:', result);
+                    showAlert('successAlert', '数据已同步到云端');
+                    updateSyncStatus('success', '数据同步成功');
+                } else {
+                    // 离线模式：只更新本地内存
+                    console.log('离线模式：数据已更新到内存');
+                    showAlert('successAlert', '数据已更新（离线模式）');
+                    updateSyncStatus('warning', '离线模式 - 数据未同步');
+                }
+            } catch (error) {
+                console.error('保存数据失败:', error);
+                showAlert('errorAlert', '保存数据失败: ' + error.message);
+                updateSyncStatus('error', '数据同步失败');
+            }
+        }
+
+        // 加载设置
+        function loadSettings() {
+            // 从localStorage加载设置，如果没有则使用默认值
+            const settings = JSON.parse(localStorage.getItem('prismSettings') || '{}');
+            
+            document.getElementById('defaultCurrency').value = settings.currency || 'USD';
+            document.getElementById('updateInterval').value = settings.updateInterval || 24;
+            document.getElementById('displayMode').value = settings.displayMode || 'grid';
+            document.getElementById('showInactive').checked = settings.showInactive || false;
+        }
+
+        // 保存设置
+        function saveSettings() {
+            const settings = {
+                currency: document.getElementById('defaultCurrency').value,
+                updateInterval: parseInt(document.getElementById('updateInterval').value),
+                displayMode: document.getElementById('displayMode').value,
+                showInactive: document.getElementById('showInactive').checked
+            };
+            
+            localStorage.setItem('prismSettings', JSON.stringify(settings));
+            showAlert('settingsSuccessAlert', '设置保存成功');
+        }
+
+        // 重置设置
+        function resetSettings() {
+            if (confirm('确定要重置所有设置为默认值吗？')) {
+                localStorage.removeItem('prismSettings');
+                loadSettings();
+                showAlert('settingsSuccessAlert', '设置已重置为默认值');
+            }
+        }
+
+        // 导出数据
+        function exportData() {
+            const data = {
+                system: {
+                    version: "1.0",
+                    lastUpdate: new Date().toISOString(),
+                    totalAccounts: accountsData.length,
+                    activeAccounts: accountsData.filter(acc => acc.status === 'active').length
+                },
+                accounts: accountsData,
+                categories: categoriesData,
+                defaultSettings: JSON.parse(localStorage.getItem('prismSettings') || '{}')
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `prism-data-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showAlert('dataSuccessAlert', '数据导出成功');
+        }
+
+        // 导入数据
+        function importData() {
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showAlert('dataErrorAlert', '请选择要导入的文件');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (data.accounts && data.categories) {
+                        accountsData = data.accounts;
+                        categoriesData = data.categories;
+                        
+                        if (data.defaultSettings) {
+                            localStorage.setItem('prismSettings', JSON.stringify(data.defaultSettings));
+                        }
+                        
+                        loadData();
+                        loadAccountsTable();
+                        loadCategoriesTable();
+                        loadSettings();
+                        
+                        showAlert('dataSuccessAlert', '数据导入成功');
+                    } else {
+                        showAlert('dataErrorAlert', '文件格式不正确');
+                    }
+                } catch (error) {
+                    showAlert('dataErrorAlert', '文件解析失败: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // 清空所有数据
+        function clearAllData() {
+            if (confirm('确定要清空所有数据吗？此操作不可撤销！')) {
+                if (confirm('请再次确认：这将删除所有账户和分类数据！')) {
+                    accountsData = [];
+                    categoriesData = [];
+                    localStorage.clear();
+                    
+                    loadData();
+                    loadAccountsTable();
+                    loadCategoriesTable();
+                    loadSettings();
+                    
+                    showAlert('dataSuccessAlert', '所有数据已清空');
+                }
+            }
+        }
+
+        // 显示提示信息
+        function showAlert(alertId, message) {
+            const alert = document.getElementById(alertId);
+            alert.textContent = message;
+            alert.classList.add('show');
+            
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 3000);
+        }
+
+        // 账户表单提交
+        document.getElementById('accountForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const accountData = {
+                id: formData.get('id'),
+                name: formData.get('name'),
+                emoji: formData.get('emoji') || '',
+                category: formData.get('category'),
+                balance: parseFloat(formData.get('balance')),
+                gain: parseFloat(formData.get('gain')) || 0,
+                drawdown: parseFloat(formData.get('drawdown')) || 0,
+                daily: parseFloat(formData.get('daily')) || 0,
+                monthly: parseFloat(formData.get('monthly')) || 0,
+                initialBalance: parseFloat(formData.get('initialBalance')),
+                trades: parseInt(formData.get('trades')) || 0,
+                winRate: parseFloat(formData.get('winRate')) || 0,
+                status: formData.get('status'),
+                description: formData.get('description'),
+                tags: formData.get('tags') ? formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag) : [],
+                createdAt: currentEditingAccount ? 
+                    accountsData.find(acc => acc.id === currentEditingAccount)?.createdAt || new Date().toISOString() :
+                    new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            if (currentEditingAccount) {
+                // 编辑现有账户
+                const index = accountsData.findIndex(acc => acc.id === currentEditingAccount);
+                if (index !== -1) {
+                    accountsData[index] = accountData;
+                }
+                showAlert('successAlert', '账户更新成功');
+            } else {
+                // 添加新账户
+                if (accountsData.find(acc => acc.id === accountData.id)) {
+                    showAlert('errorAlert', '账户ID已存在');
+                    return;
+                }
+                accountsData.push(accountData);
+                showAlert('successAlert', '账户添加成功');
+            }
+            
+            saveData();
+            loadAccountsTable();
+            updateDashboard();
+            closeAccountModal();
+        });
+
+        // 分类表单提交
+        document.getElementById('categoryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const categoryData = {
+                id: formData.get('id'),
+                name: formData.get('name'),
+                description: formData.get('description'),
+                color: formData.get('color')
+            };
+            
+            if (currentEditingCategory) {
+                // 编辑现有分类
+                const index = categoriesData.findIndex(cat => cat.id === currentEditingCategory);
+                if (index !== -1) {
+                    categoriesData[index] = categoryData;
+                }
+                showAlert('categorySuccessAlert', '分类更新成功');
+            } else {
+                // 添加新分类
+                if (categoriesData.find(cat => cat.id === categoryData.id)) {
+                    showAlert('categoryErrorAlert', '分类ID已存在');
+                    return;
+                }
+                categoriesData.push(categoryData);
+                showAlert('categorySuccessAlert', '分类添加成功');
+            }
+            
+            saveData();
+            loadCategoriesTable();
+            loadCategoryOptions();
+            closeCategoryModal();
+        });
+
+        // 点击模态框外部关闭
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        // 更新同步状态
+        function updateSyncStatus(status, message) {
+            const indicator = document.querySelector('.sync-indicator');
+            const text = document.getElementById('syncText');
+            
+            // 移除所有状态类
+            indicator.classList.remove('sync-success', 'sync-error', 'sync-warning', 'sync-syncing');
+            
+            // 添加新状态类
+            indicator.classList.add(`sync-${status}`);
+            text.textContent = message;
+        }
+
+        // 开始自动同步
+        function startAutoSync() {
+            // 每30秒检查一次数据更新
+            syncInterval = setInterval(async () => {
+                if (isOnline) {
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/data`);
+                        if (response.ok) {
+                            const data = await response.json();
+                            
+                            // 检查数据是否有变化
+                            const currentDataHash = JSON.stringify(accountsData) + JSON.stringify(categoriesData);
+                            const newDataHash = JSON.stringify(data.accounts) + JSON.stringify(data.categories);
+                            
+                            if (currentDataHash !== newDataHash) {
+                                accountsData = data.accounts || [];
+                                categoriesData = data.categories || [];
+                                
+                                // 更新界面
+                                updateDashboard();
+                                loadAccountsTable();
+                                loadCategoriesTable();
+                                loadCategoryOptions();
+                                
+                                updateSyncStatus('success', '数据已自动同步');
+                                console.log('数据已自动同步');
+                            }
+                        }
+                    } catch (error) {
+                        console.log('自动同步检查失败:', error);
+                        updateSyncStatus('warning', '同步检查失败');
+                    }
+                }
+            }, 30000); // 30秒
+        }
+
+        // 停止自动同步
+        function stopAutoSync() {
+            if (syncInterval) {
+                clearInterval(syncInterval);
+                syncInterval = null;
+            }
+        }
+
+        // 设置在线状态监听
+        function setupOnlineStatus() {
+            // 更新连接状态显示
+            const connectionStatus = document.getElementById('connectionStatus');
+            if (connectionStatus) {
+                connectionStatus.textContent = isOnline ? '在线' : '离线';
+            }
+            
+            window.addEventListener('online', () => {
+                isOnline = true;
+                updateSyncStatus('success', '已连接');
+                if (connectionStatus) {
+                    connectionStatus.textContent = '在线';
+                }
+                loadData(); // 重新加载数据
+                startAutoSync();
+            });
+
+            window.addEventListener('offline', () => {
+                isOnline = false;
+                updateSyncStatus('warning', '离线模式');
+                if (connectionStatus) {
+                    connectionStatus.textContent = '离线';
+                }
+                stopAutoSync();
+            });
+        }
+
+        // 手动同步数据
+        async function manualSync() {
+            if (!isOnline) {
+                showAlert('errorAlert', '当前处于离线模式，无法同步数据');
+                return;
+            }
+            
+            try {
+                updateSyncStatus('syncing', '正在同步...');
+                await loadData();
+                showAlert('successAlert', '数据同步成功');
+            } catch (error) {
+                showAlert('errorAlert', '数据同步失败: ' + error.message);
+            }
+        }
+
+        // 页面卸载时清理
+        window.addEventListener('beforeunload', () => {
+            stopAutoSync();
+        });
+
+        // 认证相关函数
+        function checkAuthentication() {
+            const session = localStorage.getItem(SESSION_KEY);
+            if (session && isValidSession(session)) {
+                showAdminInterface();
+            } else {
+                showLoginPage();
+            }
+        }
+
+        function isValidSession(session) {
+            try {
+                const sessionData = JSON.parse(session);
+                const now = new Date().getTime();
+                // 会话有效期24小时
+                return sessionData.timestamp && (now - sessionData.timestamp) < 24 * 60 * 60 * 1000;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        function showLoginPage() {
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('adminInterface').style.display = 'none';
+        }
+
+        function showAdminInterface() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('adminInterface').style.display = 'block';
+            addLogoutButton();
+            loadData();
+            loadSettings();
+            startAutoSync();
+            setupOnlineStatus();
+        }
+
+        function verifyPassword(inputPassword) {
+            try {
+                const decodedPassword = atob(ENCRYPTED_PASSWORD);
+                return inputPassword === decodedPassword;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        function createSession() {
+            const sessionData = {
+                timestamp: new Date().getTime(),
+                authenticated: true
+            };
+            localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
+        }
+
+        function logout() {
+            localStorage.removeItem(SESSION_KEY);
+            location.reload();
+        }
+
+        // 登录表单提交
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('loginPasswordInput').value;
+            const errorAlert = document.getElementById('loginErrorAlert');
+            
+            if (verifyPassword(password)) {
+                createSession();
+                showAdminInterface();
+            } else {
+                errorAlert.textContent = '密码错误，请重试';
+                errorAlert.style.display = 'block';
+                document.getElementById('loginPasswordInput').value = '';
+                setTimeout(() => {
+                    errorAlert.style.display = 'none';
+                }, 3000);
+            }
+        });
+
+        // 添加登出功能到导航栏
+        function addLogoutButton() {
+            const nav = document.querySelector('.admin-nav');
+            const logoutBtn = document.createElement('button');
+            logoutBtn.className = 'nav-btn';
+            logoutBtn.textContent = '登出';
+            logoutBtn.onclick = logout;
+            nav.appendChild(logoutBtn);
+        }
+    </script>
+</body>
+</html>
