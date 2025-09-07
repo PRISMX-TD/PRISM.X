@@ -4930,7 +4930,7 @@
 
             // API 配置
             const API_CONFIG = {
-                baseUrl: 'https://prism-x.vercel.app',
+                baseUrl: 'https://prism-x.vercel.app/api',
                 localDataUrl: 'data/accounts.json'
             };
 
@@ -4944,7 +4944,7 @@
             // 从 API 加载数据
             async function loadDataFromAPI() {
                 try {
-                    const response = await fetch(`${API_CONFIG.baseUrl}/api/data`);
+                    const response = await fetch(`${API_CONFIG.baseUrl}/data`);
                     if (response.ok) {
                         const data = await response.json();
                         return data;
@@ -4996,7 +4996,7 @@
                     
                     // 如果localStorage没有数据，尝试从API获取
                     try {
-                        const response = await fetch(`${API_CONFIG.baseUrl}/api/descriptions`);
+                        const response = await fetch(`${API_CONFIG.baseUrl}/descriptions`);
                         if (response.ok) {
                             const descriptions = await response.json();
                             console.log('✅ 从API成功加载描述数据:', descriptions);
@@ -6122,6 +6122,27 @@
                     loadAccountsData();
                 }
             }, 2000); // 每2秒检查一次
+            
+            // 定期检查API数据更新（跨设备同步）
+            setInterval(async function() {
+                try {
+                    console.log('定期检查API数据更新...');
+                    const apiData = await loadDataFromAPI();
+                    if (apiData) {
+                        const currentDataString = JSON.stringify(accountsData);
+                        const apiDataString = JSON.stringify(apiData);
+                        
+                        if (currentDataString !== apiDataString) {
+                            console.log('检测到API数据更新，同步数据');
+                            accountsData = apiData;
+                            updateAccountsDisplay();
+                            updateAccountDescriptions();
+                        }
+                    }
+                } catch (error) {
+                    console.log('API数据检查失败:', error);
+                }
+            }, 10000); // 每10秒检查一次API
             
             // 定期检查后台描述更新
             setInterval(function() {

@@ -13,7 +13,7 @@ const GITHUB_REPO = 'PRISM.X';
 const DATA_ISSUE_TITLE = 'PRISM X Accounts Data';
 
 // 获取数据
-app.get('/api/data', async (req, res) => {
+app.get('/data', async (req, res) => {
     try {
         const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues`, {
             headers: {
@@ -46,7 +46,7 @@ app.get('/api/data', async (req, res) => {
 });
 
 // 获取描述数据
-app.get('/api/descriptions', async (req, res) => {
+app.get('/descriptions', async (req, res) => {
     try {
         const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues`, {
             headers: {
@@ -88,7 +88,7 @@ app.get('/api/descriptions', async (req, res) => {
 });
 
 // 保存数据
-app.post('/api/data', async (req, res) => {
+app.post('/data', async (req, res) => {
     try {
         const data = req.body;
         
