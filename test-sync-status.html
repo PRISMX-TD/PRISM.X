@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRISM X - 数据同步状态测试</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            color: #8b5cf6;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .status-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #8b5cf6;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-label {
+            font-weight: bold;
+        }
+        
+        .status-value {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        
+        .status-success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+        
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .status-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+        
+        .test-button {
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+        
+        .log-area {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        
+        .log-success { color: #22c55e; }
+        .log-error { color: #ef4444; }
+        .log-info { color: #3b82f6; }
+        .log-warning { color: #f59e0b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 PRISM X 数据同步状态测试</h1>
+        
+        <div class="status-card">
+            <h3>📡 API 连接状态</h3>
+            <div class="status-item">
+                <span class="status-label">API 地址:</span>
+                <span class="status-value" id="apiUrl">检查中...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">连接状态:</span>
+                <span class="status-value" id="connectionStatus">检查中...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">响应时间:</span>
+                <span class="status-value" id="responseTime">-</span>
+            </div>
+        </div>
+        
+        <div class="status-card">
+            <h3>💾 数据同步状态</h3>
+            <div class="status-item">
+                <span class="status-label">本地存储:</span>
+                <span class="status-value" id="localStorageStatus">检查中...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">API 数据:</span>
+                <span class="status-value" id="apiDataStatus">检查中...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">数据同步:</span>
+                <span class="status-value" id="syncStatus">检查中...</span>
+            </div>
+        </div>
+        
+        <div class="status-card">
+            <h3>🧪 测试操作</h3>
+            <button class="test-button" onclick="testAPIConnection()">测试 API 连接</button>
+            <button class="test-button" onclick="testDataSync()">测试数据同步</button>
+            <button class="test-button" onclick="clearLocalStorage()">清除本地存储</button>
+            <button class="test-button" onclick="forceRefresh()">强制刷新</button>
+        </div>
+        
+        <div class="log-area" id="logArea">
+            <div class="log-entry log-info">[INFO] 初始化测试页面...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://prism-x.vercel.app/api';
+        
+        function log(message, type = 'info') {
+            const logArea = document.getElementById('logArea');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.textContent = `[${timestamp}] [${type.toUpperCase()}] ${message}`;
+            logArea.appendChild(logEntry);
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+        
+        async function testAPIConnection() {
+            log('开始测试 API 连接...', 'info');
+            const startTime = Date.now();
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/data`);
+                const responseTime = Date.now() - startTime;
+                
+                document.getElementById('responseTime').textContent = `${responseTime}ms`;
+                
+                if (response.ok) {
+                    document.getElementById('connectionStatus').textContent = '连接成功';
+                    document.getElementById('connectionStatus').className = 'status-value status-success';
+                    log(`API 连接成功，响应时间: ${responseTime}ms`, 'success');
+                    
+                    const data = await response.json();
+                    document.getElementById('apiDataStatus').textContent = `数据正常 (${Object.keys(data).length} 个字段)`;
+                    document.getElementById('apiDataStatus').className = 'status-value status-success';
+                    log('API 数据加载成功', 'success');
+                } else {
+                    document.getElementById('connectionStatus').textContent = `连接失败 (${response.status})`;
+                    document.getElementById('connectionStatus').className = 'status-value status-error';
+                    log(`API 连接失败: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                const responseTime = Date.now() - startTime;
+                document.getElementById('responseTime').textContent = `${responseTime}ms (失败)`;
+                document.getElementById('connectionStatus').textContent = '连接错误';
+                document.getElementById('connectionStatus').className = 'status-value status-error';
+                log(`API 连接错误: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testDataSync() {
+            log('开始测试数据同步...', 'info');
+            
+            try {
+                // 检查本地存储
+                const localData = localStorage.getItem('prismAccountsData');
+                if (localData) {
+                    document.getElementById('localStorageStatus').textContent = '有数据';
+                    document.getElementById('localStorageStatus').className = 'status-value status-success';
+                    log('本地存储数据存在', 'success');
+                } else {
+                    document.getElementById('localStorageStatus').textContent = '无数据';
+                    document.getElementById('localStorageStatus').className = 'status-value status-warning';
+                    log('本地存储无数据', 'warning');
+                }
+                
+                // 检查API数据
+                const response = await fetch(`${API_BASE_URL}/data`);
+                if (response.ok) {
+                    const apiData = await response.json();
+                    const localDataObj = localData ? JSON.parse(localData) : null;
+                    
+                    if (localDataObj && JSON.stringify(localDataObj) === JSON.stringify(apiData)) {
+                        document.getElementById('syncStatus').textContent = '数据同步';
+                        document.getElementById('syncStatus').className = 'status-value status-success';
+                        log('本地数据与API数据同步', 'success');
+                    } else {
+                        document.getElementById('syncStatus').textContent = '数据不同步';
+                        document.getElementById('syncStatus').className = 'status-value status-warning';
+                        log('本地数据与API数据不同步', 'warning');
+                    }
+                }
+            } catch (error) {
+                log(`数据同步测试失败: ${error.message}`, 'error');
+            }
+        }
+        
+        function clearLocalStorage() {
+            localStorage.removeItem('prismAccountsData');
+            document.getElementById('localStorageStatus').textContent = '已清除';
+            document.getElementById('localStorageStatus').className = 'status-value status-warning';
+            log('本地存储已清除', 'warning');
+        }
+        
+        function forceRefresh() {
+            log('强制刷新页面...', 'info');
+            window.location.reload();
+        }
+        
+        // 页面加载时自动检查
+        window.addEventListener('load', function() {
+            document.getElementById('apiUrl').textContent = API_BASE_URL;
+            log('页面加载完成，开始自动检查...', 'info');
+            
+            setTimeout(() => {
+                testAPIConnection();
+            }, 1000);
+            
+            setTimeout(() => {
+                testDataSync();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
