@@ -798,6 +798,36 @@
                     <input type="text" class="form-input" id="accountName" name="name" required>
                 </div>
                 <div class="form-group">
+                    <label class="form-label">账户图标</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="text" class="form-input" id="accountEmoji" name="emoji" placeholder="选择或输入emoji" style="flex: 1;" maxlength="2">
+                        <button type="button" class="btn btn-secondary" onclick="openEmojiPicker()">选择</button>
+                    </div>
+                    <div id="emojiPreview" style="margin-top: 10px; display: none;">
+                        <div id="emojiPreviewDisplay" style="width: 60px; height: 60px; border-radius: 50%; background: #2a2a2a; border: 2px solid #8b5cf6; display: flex; align-items: center; justify-content: center; font-size: 24px;"></div>
+                    </div>
+                    <div id="emojiPicker" style="display: none; margin-top: 10px; padding: 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px;">
+                        <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; max-height: 200px; overflow-y: auto;">
+                            <div class="emoji-option" data-emoji="🏹" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🏹</div>
+                            <div class="emoji-option" data-emoji="🔥" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🔥</div>
+                            <div class="emoji-option" data-emoji="🐍" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🐍</div>
+                            <div class="emoji-option" data-emoji="📊" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">📊</div>
+                            <div class="emoji-option" data-emoji="💰" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">💰</div>
+                            <div class="emoji-option" data-emoji="⚡" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">⚡</div>
+                            <div class="emoji-option" data-emoji="🎯" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🎯</div>
+                            <div class="emoji-option" data-emoji="🚀" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🚀</div>
+                            <div class="emoji-option" data-emoji="💎" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">💎</div>
+                            <div class="emoji-option" data-emoji="⭐" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">⭐</div>
+                            <div class="emoji-option" data-emoji="🌟" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🌟</div>
+                            <div class="emoji-option" data-emoji="🔥" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🔥</div>
+                            <div class="emoji-option" data-emoji="💪" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">💪</div>
+                            <div class="emoji-option" data-emoji="🎪" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🎪</div>
+                            <div class="emoji-option" data-emoji="🎨" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🎨</div>
+                            <div class="emoji-option" data-emoji="🎭" style="padding: 8px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 20px;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">🎭</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="form-label">分类</label>
                     <select class="form-input" id="accountCategory" name="category" required>
                         <option value="">请选择分类</option>
@@ -853,6 +883,23 @@
                 <div class="form-group">
                     <label class="form-label">描述</label>
                     <textarea class="form-input form-textarea" id="accountDescription" name="description" placeholder="输入账户描述..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">账户标签</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <input type="text" class="form-input" id="accountTags" name="tags" placeholder="输入标签，用逗号分隔" style="flex: 1;">
+                        <button type="button" class="btn btn-secondary" onclick="addTagFromInput()">添加</button>
+                    </div>
+                    <div id="tagsPreview" style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+                        <!-- 标签预览将在这里显示 -->
+                    </div>
+                    <div style="margin-top: 10px; font-size: 12px; color: #888;">
+                        常用标签：<span class="tag-suggestion" onclick="addSuggestedTag('高胜率')" style="cursor: pointer; color: #8b5cf6; text-decoration: underline;">高胜率</span> | 
+                        <span class="tag-suggestion" onclick="addSuggestedTag('低回撤')" style="cursor: pointer; color: #8b5cf6; text-decoration: underline;">低回撤</span> | 
+                        <span class="tag-suggestion" onclick="addSuggestedTag('稳定收益')" style="cursor: pointer; color: #8b5cf6; text-decoration: underline;">稳定收益</span> | 
+                        <span class="tag-suggestion" onclick="addSuggestedTag('马丁策略')" style="cursor: pointer; color: #8b5cf6; text-decoration: underline;">马丁策略</span> | 
+                        <span class="tag-suggestion" onclick="addSuggestedTag('趋势跟踪')" style="cursor: pointer; color: #8b5cf6; text-decoration: underline;">趋势跟踪</span>
+                    </div>
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 20px;">
                     <button type="submit" class="btn btn-primary">保存</button>
@@ -914,6 +961,30 @@
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             checkAuthentication();
+            
+            // 添加emoji相关事件监听器
+            const emojiInput = document.getElementById('accountEmoji');
+            
+            if (emojiInput) {
+                emojiInput.addEventListener('input', handleEmojiInput);
+            }
+            
+            // 添加标签相关事件监听器
+            const tagsInput = document.getElementById('accountTags');
+            
+            if (tagsInput) {
+                tagsInput.addEventListener('input', function() {
+                    const tags = this.value.split(',').map(tag => tag.trim()).filter(tag => tag);
+                    updateTagsPreview(tags);
+                });
+            }
+            
+            // 为emoji选择器添加点击事件
+            document.querySelectorAll('.emoji-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    selectEmoji(this.dataset.emoji);
+                });
+            });
         });
 
         // 显示指定部分
@@ -1075,6 +1146,7 @@
                 if (account) {
                     document.getElementById('accountId').value = account.id;
                     document.getElementById('accountName').value = account.name;
+                    document.getElementById('accountEmoji').value = account.emoji || '';
                     document.getElementById('accountCategory').value = account.category;
                     document.getElementById('accountInitialBalance').value = account.initialBalance || 0;
                     document.getElementById('accountBalance').value = account.balance || 0;
@@ -1086,10 +1158,20 @@
                     document.getElementById('accountWinRate').value = account.winRate || 0;
                     document.getElementById('accountStatus').value = account.status || 'active';
                     document.getElementById('accountDescription').value = account.description || '';
+                    document.getElementById('accountTags').value = account.tags ? account.tags.join(', ') : '';
+                    
+                    // 更新emoji预览
+                    updateEmojiPreview(account.emoji);
+                    // 更新标签预览
+                    updateTagsPreview(account.tags || []);
                 }
             } else {
                 title.textContent = '添加账户';
                 form.reset();
+                // 清除emoji预览
+                updateEmojiPreview('');
+                // 清除标签预览
+                updateTagsPreview([]);
             }
             
             modal.classList.add('active');
@@ -1099,6 +1181,87 @@
         function closeAccountModal() {
             document.getElementById('accountModal').classList.remove('active');
             currentEditingAccount = null;
+        }
+        
+        // 更新emoji预览
+        function updateEmojiPreview(emoji) {
+            const preview = document.getElementById('emojiPreview');
+            const previewDisplay = document.getElementById('emojiPreviewDisplay');
+            
+            if (emoji && emoji.trim() !== '') {
+                previewDisplay.textContent = emoji;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+        
+        // 处理emoji输入
+        function handleEmojiInput() {
+            const emojiInput = document.getElementById('accountEmoji');
+            const emoji = emojiInput.value.trim();
+            updateEmojiPreview(emoji);
+        }
+        
+        // 打开emoji选择器
+        function openEmojiPicker() {
+            const picker = document.getElementById('emojiPicker');
+            if (picker.style.display === 'none' || picker.style.display === '') {
+                picker.style.display = 'block';
+            } else {
+                picker.style.display = 'none';
+            }
+        }
+        
+        // 选择emoji
+        function selectEmoji(emoji) {
+            document.getElementById('accountEmoji').value = emoji;
+            updateEmojiPreview(emoji);
+            document.getElementById('emojiPicker').style.display = 'none';
+        }
+        
+        // 更新标签预览
+        function updateTagsPreview(tags) {
+            const preview = document.getElementById('tagsPreview');
+            preview.innerHTML = '';
+            
+            tags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag-preview';
+                tagElement.textContent = tag;
+                tagElement.style.cssText = `
+                    background: #8b5cf6;
+                    color: white;
+                    padding: 4px 8px;
+                    border-radius: 12px;
+                    font-size: 12px;
+                    display: inline-block;
+                    margin: 2px;
+                `;
+                preview.appendChild(tagElement);
+            });
+        }
+        
+        // 从输入框添加标签
+        function addTagFromInput() {
+            const input = document.getElementById('accountTags');
+            const tags = input.value.split(',').map(tag => tag.trim()).filter(tag => tag);
+            
+            if (tags.length > 0) {
+                updateTagsPreview(tags);
+            }
+        }
+        
+        // 添加建议标签
+        function addSuggestedTag(tag) {
+            const input = document.getElementById('accountTags');
+            const currentTags = input.value.split(',').map(t => t.trim()).filter(t => t);
+            
+            if (!currentTags.includes(tag)) {
+                currentTags.push(tag);
+                input.value = currentTags.join(', ');
+                updateTagsPreview(currentTags);
+            }
         }
 
         // 打开分类模态框
@@ -1182,6 +1345,10 @@
                         showInactive: document.getElementById('showInactive')?.checked || false
                     }
                 };
+                
+                // 首先保存到localStorage，确保index页面能立即获取到数据
+                localStorage.setItem('prismAccountsData', JSON.stringify(data));
+                console.log('✅ 数据已保存到localStorage:', data);
                 
                 if (isOnline) {
                     // 在线模式：保存到API
@@ -1352,6 +1519,7 @@
             const accountData = {
                 id: formData.get('id'),
                 name: formData.get('name'),
+                emoji: formData.get('emoji') || '',
                 category: formData.get('category'),
                 balance: parseFloat(formData.get('balance')),
                 gain: parseFloat(formData.get('gain')) || 0,
@@ -1363,6 +1531,7 @@
                 winRate: parseFloat(formData.get('winRate')) || 0,
                 status: formData.get('status'),
                 description: formData.get('description'),
+                tags: formData.get('tags') ? formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag) : [],
                 createdAt: currentEditingAccount ? 
                     accountsData.find(acc => acc.id === currentEditingAccount)?.createdAt || new Date().toISOString() :
                     new Date().toISOString(),
