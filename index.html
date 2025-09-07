@@ -2437,10 +2437,28 @@
         /* 账户追踪系统样式增强 */
         .account-data-card {
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .account-data-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .account-data-card:hover::before {
+            left: 100%;
         }
         
         .account-data-card:hover {
             animation: cardHover 0.4s ease forwards;
+            transform: translateY(-8px) scale(1.02);
         }
         
         .account-data-card:hover .card-border {
@@ -2454,16 +2472,1119 @@
         /* 标题动画效果 */
         .account-title {
             animation: titleGlow 3s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .account-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #8b5cf6, #06b6d4, #8b5cf6);
+            animation: titleUnderline 3s ease-in-out infinite;
+        }
+        
+        @keyframes titleUnderline {
+            0%, 100% { width: 0; }
+            50% { width: 100%; }
         }
         
         /* 账户信息卡片悬停效果 */
         .account-info-grid .info-item:hover {
             background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        }
+        
+        /* 数字滚动动画 */
+        .number-counter {
+            display: inline-block;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .number-counter.animate {
+            animation: numberPulse 0.6s ease-out;
+        }
+        
+        @keyframes numberPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); color: #06b6d4; }
+            100% { transform: scale(1); }
+        }
+        
+        /* 收益指示器 */
+        .profit-indicator {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .profit-indicator::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: profitPulse 2s ease-in-out infinite;
+        }
+        
+        .profit-indicator.positive::before {
+            background: #10b981;
+        }
+        
+        .profit-indicator.negative::before {
+            background: #ef4444;
+        }
+        
+        @keyframes profitPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+        
+        /* 数据卡片增强效果 */
+        .overview-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .overview-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .overview-card:hover::after {
+            opacity: 1;
+        }
+        
+        .overview-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(139, 92, 246, 0.2);
+        }
+        
+        /* 加载动画增强 */
+        .loading-accounts {
+            position: relative;
+        }
+        
+        .loading-spinner {
+            position: relative;
+        }
+        
+        .loading-spinner::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            margin: -20px 0 0 -20px;
+            border: 3px solid rgba(139, 92, 246, 0.3);
+            border-top: 3px solid #8b5cf6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        .loading-spinner::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid rgba(6, 182, 212, 0.3);
+            border-top: 2px solid #06b6d4;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite reverse;
+        }
+        
+        /* 性能趋势指示器 */
+        .performance-trend {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        
+        .trend-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .trend-indicator.trending-up {
+            color: #10b981;
+        }
+        
+        .trend-indicator.trending-down {
+            color: #ef4444;
+        }
+        
+        .trend-indicator.trending-neutral {
+            color: #6b7280;
+        }
+        
+        .trend-icon {
+            font-size: 1.2rem;
+            animation: trendPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes trendPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        /* 货币符号样式 */
+        .currency-symbol {
+            color: #10b981;
+            font-weight: 600;
+            margin-right: 2px;
+        }
+        
+        /* 收益指示器中性状态 */
+        .profit-indicator.neutral::before {
+            background: #6b7280;
+        }
+        
+        /* 统计项增强效果 */
+        .stat-item {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stat-item:hover .stat-value {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+        }
+        
+        /* 账户卡片进入动画 */
+        .account-card {
+            animation: cardSlideIn 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        @keyframes cardSlideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 为不同卡片添加延迟 */
+        .account-card:nth-child(1) { animation-delay: 0.1s; }
+        .account-card:nth-child(2) { animation-delay: 0.2s; }
+        .account-card:nth-child(3) { animation-delay: 0.3s; }
+        .account-card:nth-child(4) { animation-delay: 0.4s; }
+        .account-card:nth-child(5) { animation-delay: 0.5s; }
+        .account-card:nth-child(6) { animation-delay: 0.6s; }
+        
+        /* 数据更新时的闪烁效果 */
+        .stat-value.updating {
+            animation: dataUpdate 0.8s ease-out;
+        }
+        
+        @keyframes dataUpdate {
+            0% { background: rgba(139, 92, 246, 0.2); }
+            50% { background: rgba(6, 182, 212, 0.3); }
+            100% { background: transparent; }
+        }
+        
+        /* 响应式优化 */
+        @media (max-width: 768px) {
+            .trend-indicator {
+                font-size: 0.8rem;
+            }
+            
+            .trend-icon {
+                font-size: 1rem;
+            }
+            
+            .performance-trend {
+                margin-top: 15px;
+                padding-top: 12px;
+            }
+        }
+        
+        /* 收益趋势图表 */
+        .profit-chart {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .chart-period {
+            font-size: 0.9rem;
+            color: #888888;
+        }
+        
+        .chart-container {
+            height: 120px;
+            position: relative;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .chart-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #8b5cf6, #06b6d4);
+            animation: chartDraw 2s ease-out forwards;
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+        
+        @keyframes chartDraw {
+            to { transform: scaleX(1); }
+        }
+        
+        .chart-points {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        
+        .chart-point {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #06b6d4;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: pointAppear 0.5s ease-out forwards;
+            opacity: 0;
+        }
+        
+        @keyframes pointAppear {
+            to { opacity: 1; }
+        }
+        
+        .chart-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.1;
+        }
+        
+        .chart-grid-line {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .chart-grid-line.horizontal {
+            width: 100%;
+            height: 1px;
+        }
+        
+        .chart-grid-line.vertical {
+            width: 1px;
+            height: 100%;
+        }
+        
+        /* 图表数据标签 */
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #888888;
+        }
+        
+        .chart-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #ffffff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            opacity: 0;
+            animation: valueAppear 0.5s ease-out 1s forwards;
+        }
+        
+        @keyframes valueAppear {
+            to { opacity: 1; }
         }
         
         /* 策略面板悬停效果 */
         .strategy-panel:hover .panel-border {
             opacity: 0.5;
+        }
+        
+        /* 账户追踪区域 - 全新流线型设计 */
+        .account-tracking-section {
+            position: relative;
+            padding: 100px 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(10, 10, 20, 0.98) 100%);
+        }
+        
+        /* 动态背景层 */
+        .tracking-bg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+        }
+        
+        .floating-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, rgba(139, 92, 246, 0.3), transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(6, 182, 212, 0.3), transparent),
+                radial-gradient(1px 1px at 90px 40px, rgba(16, 185, 129, 0.3), transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(245, 158, 11, 0.3), transparent);
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: particleFloat 20s linear infinite;
+        }
+        
+        @keyframes particleFloat {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-200px, -200px); }
+        }
+        
+        .gradient-orbs {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.3;
+            animation: orbFloat 15s ease-in-out infinite;
+        }
+        
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .orb-2 {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.4) 0%, transparent 70%);
+            top: 60%;
+            right: 15%;
+            animation-delay: 5s;
+        }
+        
+        .orb-3 {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, transparent 70%);
+            bottom: 20%;
+            left: 50%;
+            animation-delay: 10s;
+        }
+        
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        
+        /* 主要内容容器 */
+        .tracking-container {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+        
+        /* 标题区域 */
+        .tracking-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        
+        .header-decoration {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .decoration-line {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.6), transparent);
+        }
+        
+        .decoration-dot {
+            width: 8px;
+            height: 8px;
+            background: #8b5cf6;
+            border-radius: 50%;
+            margin: 0 20px;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
+        }
+        
+        .tracking-title {
+            margin-bottom: 20px;
+        }
+        
+        .title-main {
+            display: block;
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4, #10b981);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+        
+        .title-sub {
+            display: block;
+            font-size: 1.2rem;
+            color: #888888;
+            font-weight: 500;
+            letter-spacing: 2px;
+        }
+        
+        .tracking-description {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .tracking-description p {
+            color: #cccccc;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #10b981;
+        }
+        
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+        
+        /* 账户流线型展示 */
+        .accounts-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        
+        .flow-card {
+            position: relative;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 30px;
+            padding: 0;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.320, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            transform-style: preserve-3d;
+        }
+        
+        .flow-card:hover {
+            transform: translateY(-15px) rotateX(2deg);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* 流线型背景 */
+        .flow-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+        }
+        
+        .flow-gradient {
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+        }
+        
+        .gold-hunter-flow .flow-gradient {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 193, 7, 0.1) 100%);
+        }
+        
+        .hellfire-flow .flow-gradient {
+            background: linear-gradient(135deg, rgba(255, 69, 0, 0.2) 0%, rgba(255, 107, 53, 0.1) 100%);
+        }
+        
+        .rattlesnake-flow .flow-gradient {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 212, 170, 0.1) 100%);
+        }
+        
+        .flow-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: flowPatternMove 25s linear infinite;
+        }
+        
+        @keyframes flowPatternMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+        }
+        
+        /* 流线型内容 */
+        .flow-content {
+            position: relative;
+            z-index: 2;
+            padding: 40px;
+            display: flex;
+            flex-direction: row;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        /* 左侧信息区域 */
+        .flow-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* 右侧数据区域 */
+        .flow-data {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* 流线型头部 */
+        .flow-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .account-avatar {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .avatar-icon {
+            font-size: 2.5rem;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
+            animation: avatarFloat 4s ease-in-out infinite;
+        }
+        
+        .avatar-ring {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 50%;
+            animation: ringRotate 8s linear infinite;
+        }
+        
+        @keyframes avatarFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(5deg); }
+        }
+        
+        @keyframes ringRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .account-info {
+            flex: 1;
+        }
+        
+        .account-name {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 8px 0;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+        
+        .account-code {
+            font-size: 1rem;
+            color: #888888;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        
+        .status-flow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 25px;
+            font-size: 0.9rem;
+            color: #10b981;
+        }
+        
+        .status-pulse {
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: statusPulse 2s ease-in-out infinite;
+        }
+        
+        /* 流线型描述 */
+        .flow-description p {
+            color: #cccccc;
+            line-height: 1.7;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        /* 流线型指标 */
+        .flow-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .metric-flow {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .metric-visual {
+            position: relative;
+        }
+        
+        /* 简洁的总收益显示设计 */
+        .profit-simple {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 12px 16px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .profit-simple:hover {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .profit-number {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #10b981;
+            text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+            line-height: 1;
+        }
+        
+        .profit-text {
+            font-size: 0.75rem;
+            color: #888888;
+            font-weight: 500;
+            line-height: 1;
+        }
+        
+        .metric-info {
+            text-align: left;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 5px;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #888888;
+            font-weight: 500;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            flex: 1;
+        }
+        
+        .mini-metric {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .mini-metric:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-3px);
+        }
+        
+        .mini-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 5px;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .mini-value.positive {
+            color: #10b981;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+        
+        .mini-label {
+            font-size: 0.8rem;
+            color: #888888;
+            font-weight: 500;
+        }
+        
+        /* 流线型标签 */
+        .flow-tags {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .flow-tag {
+            padding: 8px 16px;
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #8b5cf6;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .flow-tag:hover {
+            background: rgba(139, 92, 246, 0.25);
+            transform: scale(1.05);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1400px) {
+            .tracking-container {
+                max-width: 1200px;
+                padding: 0 30px;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .flow-content {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .flow-metrics {
+                flex-direction: column;
+                gap: 25px;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .account-tracking-section {
+                padding: 80px 0;
+            }
+            
+            .tracking-header {
+                margin-bottom: 60px;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .title-main {
+                font-size: 3rem;
+            }
+            
+            .flow-content {
+                padding: 30px;
+            }
+            
+            .account-name {
+                font-size: 2rem;
+            }
+            
+            .metric-value {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .tracking-container {
+                padding: 0 20px;
+            }
+            
+            .account-tracking-section {
+                padding: 60px 0;
+            }
+            
+            .title-main {
+                font-size: 2.5rem;
+            }
+            
+            .title-sub {
+                font-size: 1rem;
+            }
+            
+            .tracking-description {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .tracking-description p {
+                font-size: 1rem;
+            }
+            
+            .flow-content {
+                padding: 25px;
+            }
+            
+            .flow-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .account-avatar {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .avatar-icon {
+                font-size: 2rem;
+            }
+            
+            .account-name {
+                font-size: 1.8rem;
+            }
+            
+            .flow-content {
+                flex-direction: column;
+                gap: 25px;
+            }
+            
+            .flow-metrics {
+                gap: 20px;
+            }
+            
+            .metric-flow {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .profit-simple {
+                padding: 10px 14px;
+            }
+            
+            .profit-number {
+                font-size: 1.2rem;
+            }
+            
+            .profit-text {
+                font-size: 0.7rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .mini-metric {
+                padding: 12px;
+            }
+            
+            .mini-value {
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .tracking-container {
+                padding: 0 15px;
+            }
+            
+            .title-main {
+                font-size: 2rem;
+            }
+            
+            .flow-content {
+                padding: 20px;
+            }
+            
+            .account-name {
+                font-size: 1.6rem;
+            }
+            
+            .metric-value {
+                font-size: 1.5rem;
+            }
+            
+            .flow-tags {
+                justify-content: center;
+            }
+            
+            .flow-tag {
+                font-size: 0.75rem;
+                padding: 6px 12px;
+            }
+        }
+        
+        /* 横屏手机优化 */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .account-tracking-section {
+                padding: 40px 0;
+            }
+            
+            .tracking-header {
+                margin-bottom: 40px;
+            }
+            
+            .accounts-flow {
+                gap: 25px;
+            }
+        }
+        
+        /* 高分辨率屏幕优化 */
+        @media (min-width: 1920px) {
+            .tracking-container {
+                max-width: 1600px;
+            }
+            
+            .title-main {
+                font-size: 4rem;
+            }
+            
+            .flow-content {
+                padding: 50px;
+            }
+            
+            .account-name {
+                font-size: 2.5rem;
+            }
+        }
+        
+        /* 流线型卡片进入动画 */
+        .flow-card {
+            animation: flowCardSlideIn 1s ease-out forwards;
+            opacity: 0;
+            transform: translateY(80px) rotateX(15deg) scale(0.9);
+        }
+        
+        .flow-card:nth-child(1) { animation-delay: 0.3s; }
+        .flow-card:nth-child(2) { animation-delay: 0.6s; }
+        .flow-card:nth-child(3) { animation-delay: 0.9s; }
+        
+        @keyframes flowCardSlideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(0deg) scale(1);
+            }
         }
         
         .widget-overlay {
@@ -2908,42 +4029,260 @@
                 </div>
             </section>
 
-            <!-- 账户展示区域 -->
-            <section class="letter-section" id="accountsSection">
-                <div class="letter-content">
-                    <div class="section-letter"></div>
-                    <h2 class="section-title">账户表现</h2>
-                    <p class="section-description">
-                        实时展示我们的交易账户表现，包括收益率、回撤等关键指标。所有数据均来自真实交易记录，透明公开。
-                    </p>
+            <!-- 账户追踪区域 - 全新设计 -->
+            <section class="account-tracking-section" id="accountsSection">
+                <!-- 动态背景层 -->
+                <div class="tracking-bg-layer">
+                    <div class="floating-particles"></div>
+                    <div class="gradient-orbs">
+                        <div class="orb orb-1"></div>
+                        <div class="orb orb-2"></div>
+                        <div class="orb orb-3"></div>
+                    </div>
+                </div>
+                
+                <!-- 主要内容容器 -->
+                <div class="tracking-container">
+                    <!-- 标题区域 -->
+                    <div class="tracking-header">
+                        <div class="header-decoration">
+                            <div class="decoration-line"></div>
+                            <div class="decoration-dot"></div>
+                            <div class="decoration-line"></div>
+                            </div>
+                        <h2 class="tracking-title">
+                            <span class="title-main">账户追踪</span>
+                            <span class="title-sub">实时监控 · 透明展示</span>
+                        </h2>
+                        <div class="tracking-description">
+                            <p>突破传统框架束缚，以流线型设计展现账户表现</p>
+                            <div class="live-indicator">
+                                <div class="pulse-dot"></div>
+                                <span>实时数据</span>
+                                    </div>
+                        </div>
+                    </div>
                     
-                    <!-- 账户统计概览 -->
-                                        <div class="accounts-overview">
-                        <div class="overview-card">
-                            <div class="overview-number" id="totalProfit">$0</div>
-                            <div class="overview-label">总收益</div>
+                    <!-- 账户展示区域 -->
+                    <div class="accounts-flow">
+                        <!-- 黄金猎手 - 流线型卡片 -->
+                        <div class="flow-card gold-hunter-flow" data-account="gold-hunter">
+                            <div class="flow-background">
+                                <div class="flow-gradient"></div>
+                                <div class="flow-pattern"></div>
                             </div>
-                        <div class="overview-card">
-                            <div class="overview-number" id="avgGain">0</div>
-                            <div class="overview-label">平均收益率</div>
+                            <div class="flow-content">
+                                <!-- 左侧信息区域 -->
+                                <div class="flow-info">
+                                    <div class="flow-header">
+                                        <div class="account-avatar">
+                                            <div class="avatar-icon">🏹</div>
+                                            <div class="avatar-ring"></div>
+                                        </div>
+                                        <div class="account-info">
+                                            <h3 class="account-name">黄金猎手</h3>
+                                            <span class="account-code">Gold Hunter</span>
+                                        </div>
+                                        <div class="status-flow">
+                                            <div class="status-pulse"></div>
+                                        <span>运行中</span>
                                     </div>
-                        <div class="overview-card">
-                            <div class="overview-number" id="avgDrawdown">0</div>
-                            <div class="overview-label">平均回撤</div>
-                                    </div>
-                        <div class="overview-card">
-                            <div class="overview-number" id="totalAccounts">0</div>
-                            <div class="overview-label">总账户数</div>
-                            </div>
                                 </div>
                                 
-                    <!-- 账户列表 -->
-                    <div class="accounts-container" id="accountsContainer">
+                                    <div class="flow-description">
+                                        <p id="goldHunterDescription">融合独创指标与马丁元素，突破传统马丁的高风险局限</p>
+                                    </div>
+                                
+                                    <div class="flow-tags">
+                                        <span class="flow-tag">三重风控</span>
+                                        <span class="flow-tag">马丁优化</span>
+                                        <span class="flow-tag">低回撤</span>
+                                        </div>
+                                        </div>
+                                
+                                <!-- 右侧数据区域 -->
+                                <div class="flow-data">
+                                    <div class="flow-metrics">
+                                        <div class="metric-flow">
+                                            <div class="metric-visual">
+                                                <div class="profit-simple">
+                                                    <div class="profit-number">+24.8%</div>
+                                                    <div class="profit-text">总收益</div>
+                                                </div>
+                                            </div>
+                                            <div class="metric-info">
+                                                <div class="metric-value" id="goldHunterBalance">$125,430</div>
+                                                <div class="metric-label">当前余额</div>
+                                            </div>
+                                        </div>
+                                
+                                        <div class="metrics-grid">
+                                            <div class="mini-metric">
+                                                <div class="mini-value positive" id="goldHunterGain">+24.8%</div>
+                                                <div class="mini-label">总收益</div>
+                                </div>
+                                            <div class="mini-metric">
+                                                <div class="mini-value" id="goldHunterDrawdown">3.2%</div>
+                                                <div class="mini-label">回撤</div>
+                                            </div>
+                                            <div class="mini-metric">
+                                                <div class="mini-value positive" id="goldHunterDaily">+1.8%</div>
+                                                <div class="mini-label">日收益</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 地狱火 - 流线型卡片 -->
+                        <div class="flow-card hellfire-flow" data-account="hellfire">
+                            <div class="flow-background">
+                                <div class="flow-gradient"></div>
+                                <div class="flow-pattern"></div>
+                            </div>
+                            <div class="flow-content">
+                                <!-- 左侧信息区域 -->
+                                <div class="flow-info">
+                                    <div class="flow-header">
+                                        <div class="account-avatar">
+                                            <div class="avatar-icon">🔥</div>
+                                            <div class="avatar-ring"></div>
+                                    </div>
+                                        <div class="account-info">
+                                            <h3 class="account-name">地狱火</h3>
+                                            <span class="account-code">Hellfire</span>
+                                        </div>
+                                        <div class="status-flow">
+                                            <div class="status-pulse"></div>
+                                        <span>运行中</span>
+                                    </div>
+                                </div>
+                                
+                                    <div class="flow-description">
+                                        <p id="hellfireDescription">独家区间突破策略，通过5年历史回测与1年实盘验证</p>
+                                    </div>
+                                
+                                    <div class="flow-tags">
+                                        <span class="flow-tag">区间突破</span>
+                                        <span class="flow-tag">算法止损</span>
+                                        <span class="flow-tag">5年回测</span>
+                                        </div>
+                                        </div>
+                                
+                                <!-- 右侧数据区域 -->
+                                <div class="flow-data">
+                                    <div class="flow-metrics">
+                                        <div class="metric-flow">
+                                            <div class="metric-visual">
+                                                <div class="profit-simple">
+                                                    <div class="profit-number">+18.5%</div>
+                                                    <div class="profit-text">总收益</div>
+                                                </div>
+                                            </div>
+                                            <div class="metric-info">
+                                                <div class="metric-value" id="hellfireBalance">$98,750</div>
+                                                <div class="metric-label">当前余额</div>
+                                            </div>
+                                        </div>
+                                
+                                        <div class="metrics-grid">
+                                            <div class="mini-metric">
+                                                <div class="mini-value positive" id="hellfireGain">+18.5%</div>
+                                                <div class="mini-label">总收益</div>
+                                </div>
+                                            <div class="mini-metric">
+                                                <div class="mini-value" id="hellfireDrawdown">2.8%</div>
+                                                <div class="mini-label">回撤</div>
+                                            </div>
+                                            <div class="mini-metric">
+                                                <div class="mini-value positive" id="hellfireDaily">+2.1%</div>
+                                                <div class="mini-label">日收益</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 响尾蛇 - 流线型卡片 -->
+                        <div class="flow-card rattlesnake-flow" data-account="rattlesnake">
+                            <div class="flow-background">
+                                <div class="flow-gradient"></div>
+                                <div class="flow-pattern"></div>
+                            </div>
+                            <div class="flow-content">
+                                <!-- 左侧信息区域 -->
+                                <div class="flow-info">
+                                    <div class="flow-header">
+                                        <div class="account-avatar">
+                                            <div class="avatar-icon">🐍</div>
+                                            <div class="avatar-ring"></div>
+                                    </div>
+                                        <div class="account-info">
+                                            <h3 class="account-name">响尾蛇</h3>
+                                            <span class="account-code">Rattlesnake</span>
+                                        </div>
+                                        <div class="status-flow">
+                                            <div class="status-pulse"></div>
+                                        <span>运行中</span>
+                                    </div>
+                                </div>
+                                
+                                    <div class="flow-description">
+                                        <p id="rattlesnakeDescription">创新的双层级信号系统，智能仓位调整平衡风险与收益</p>
+                                    </div>
+                                
+                                    <div class="flow-tags">
+                                        <span class="flow-tag">双层级信号</span>
+                                        <span class="flow-tag">智能风控</span>
+                                        <span class="flow-tag">自动调仓</span>
+                                        </div>
+                                        </div>
+                                
+                                <!-- 右侧数据区域 -->
+                                <div class="flow-data">
+                                    <div class="flow-metrics">
+                                        <div class="metric-flow">
+                                            <div class="metric-visual">
+                                                <div class="profit-simple">
+                                                    <div class="profit-number">+31.2%</div>
+                                                    <div class="profit-text">总收益</div>
+                                                </div>
+                                            </div>
+                                            <div class="metric-info">
+                                                <div class="metric-value" id="rattlesnakeBalance">$156,200</div>
+                                                <div class="metric-label">当前余额</div>
+                                            </div>
+                                        </div>
+                                
+                                        <div class="metrics-grid">
+                                            <div class="mini-metric">
+                                                <div class="mini-value positive" id="rattlesnakeGain">+31.2%</div>
+                                                <div class="mini-label">总收益</div>
+                                </div>
+                                            <div class="mini-metric">
+                                                <div class="mini-value" id="rattlesnakeDrawdown">4.1%</div>
+                                                <div class="mini-label">回撤</div>
+                                            </div>
+                                            <div class="mini-metric">
+                                                <div class="mini-value positive" id="rattlesnakeDaily">+1.5%</div>
+                                                <div class="mini-label">日收益</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 账户列表容器（保留用于动态数据） -->
+                    <div class="accounts-container" id="accountsContainer" style="display: none;">
                         <div class="loading-accounts">
                             <div class="loading-spinner"></div>
                             <p>正在加载账户数据...</p>
-                            </div>
                         </div>
+                    </div>
                             </div>
             </section>
                                     
@@ -3126,6 +4465,7 @@
                     localStorage.setItem('prismAccountsData', JSON.stringify(apiData));
                     console.log('从 API 加载账户数据');
                     updateAccountsDisplay();
+                    updateAccountDescriptions();
                     return;
                 }
 
@@ -3137,6 +4477,7 @@
                         accountsData = parsedData;
                         console.log('从本地存储加载账户数据');
                         updateAccountsDisplay();
+                        updateAccountDescriptions();
                         return;
                     } catch (error) {
                         console.error('本地存储数据解析失败:', error);
@@ -3150,6 +4491,7 @@
                         const data = await response.json();
                         accountsData = data;
                         updateAccountsDisplay();
+                        updateAccountDescriptions();
                     } else {
                         console.warn('无法加载账户数据，使用默认数据');
                         useDefaultData();
@@ -3188,9 +4530,38 @@
                         version: "1.0",
                         lastUpdate: new Date().toISOString(),
                         totalAccounts: 0
+                    },
+                    descriptions: {
+                        'gold-hunter': '融合独创指标与马丁元素，突破传统马丁的高风险局限',
+                        'hellfire': '独家区间突破策略，通过5年历史回测与1年实盘验证',
+                        'rattlesnake': '创新的双层级信号系统，智能仓位调整平衡风险与收益'
                     }
                 };
                 updateAccountsDisplay();
+                updateAccountDescriptions();
+            }
+            
+            // 更新账户描述
+            function updateAccountDescriptions() {
+                if (accountsData.descriptions) {
+                    // 更新黄金猎手描述
+                    const goldHunterDesc = document.getElementById('goldHunterDescription');
+                    if (goldHunterDesc && accountsData.descriptions['gold-hunter']) {
+                        goldHunterDesc.textContent = accountsData.descriptions['gold-hunter'];
+                    }
+                    
+                    // 更新地狱火描述
+                    const hellfireDesc = document.getElementById('hellfireDescription');
+                    if (hellfireDesc && accountsData.descriptions['hellfire']) {
+                        hellfireDesc.textContent = accountsData.descriptions['hellfire'];
+                    }
+                    
+                    // 更新响尾蛇描述
+                    const rattlesnakeDesc = document.getElementById('rattlesnakeDescription');
+                    if (rattlesnakeDesc && accountsData.descriptions['rattlesnake']) {
+                        rattlesnakeDesc.textContent = accountsData.descriptions['rattlesnake'];
+                    }
+                }
             }
 
             // 保存数据到 GitHub
@@ -3243,8 +4614,151 @@
             function updateAccountsDisplay() {
                 updateOverviewStats();
                 updateAccountsList();
+                updateProfitChart();
+            }
+            
+            // 生成收益趋势图表
+            function updateProfitChart() {
+                const chartContainer = document.getElementById('profitChart');
+                const chartGrid = document.getElementById('chartGrid');
+                const chartPoints = document.getElementById('chartPoints');
+                
+                if (!chartContainer || accountsData.accounts.length === 0) {
+                    if (chartContainer) chartContainer.style.display = 'none';
+                    return;
+                }
+                
+                // 显示图表
+                chartContainer.style.display = 'block';
+                
+                // 生成模拟的7天收益数据
+                const profitData = generateProfitData();
+                
+                // 创建网格线
+                createChartGrid(chartGrid);
+                
+                // 创建数据点
+                createChartPoints(chartPoints, profitData);
+            }
+            
+            // 生成模拟收益数据
+            function generateProfitData() {
+                const data = [];
+                let currentProfit = 0;
+                
+                for (let i = 0; i < 7; i++) {
+                    // 模拟收益变化
+                    const change = (Math.random() - 0.5) * 2; // -1 到 1 的随机变化
+                    currentProfit += change;
+                    data.push({
+                        day: i,
+                        profit: Math.max(currentProfit, -10), // 限制最低收益为-10%
+                        value: currentProfit.toFixed(2)
+                    });
+                }
+                
+                return data;
+            }
+            
+            // 创建图表网格
+            function createChartGrid(container) {
+                container.innerHTML = '';
+                
+                // 水平网格线
+                for (let i = 0; i <= 4; i++) {
+                    const line = document.createElement('div');
+                    line.className = 'chart-grid-line horizontal';
+                    line.style.top = `${i * 25}%`;
+                    container.appendChild(line);
+                }
+                
+                // 垂直网格线
+                for (let i = 0; i <= 4; i++) {
+                    const line = document.createElement('div');
+                    line.className = 'chart-grid-line vertical';
+                    line.style.left = `${i * 25}%`;
+                    container.appendChild(line);
+                }
+            }
+            
+            // 创建图表数据点
+            function createChartPoints(container, data) {
+                container.innerHTML = '';
+                
+                const maxProfit = Math.max(...data.map(d => d.profit));
+                const minProfit = Math.min(...data.map(d => d.profit));
+                const range = maxProfit - minProfit || 1;
+                
+                data.forEach((point, index) => {
+                    const pointElement = document.createElement('div');
+                    pointElement.className = 'chart-point';
+                    
+                    // 计算位置
+                    const x = (index / (data.length - 1)) * 100;
+                    const y = 100 - ((point.profit - minProfit) / range) * 100;
+                    
+                    pointElement.style.left = `${x}%`;
+                    pointElement.style.top = `${y}%`;
+                    pointElement.style.animationDelay = `${index * 0.2}s`;
+                    
+                    // 添加数值标签
+                    const valueLabel = document.createElement('div');
+                    valueLabel.className = 'chart-value';
+                    valueLabel.textContent = `${point.value}%`;
+                    valueLabel.style.animationDelay = `${index * 0.2 + 0.5}s`;
+                    pointElement.appendChild(valueLabel);
+                    
+                    container.appendChild(pointElement);
+                });
             }
 
+            // 数字滚动动画函数
+            function animateNumber(element, targetValue, duration = 1000, prefix = '', suffix = '') {
+                const startValue = parseFloat(element.textContent.replace(/[^0-9.-]/g, '')) || 0;
+                const difference = targetValue - startValue;
+                const startTime = performance.now();
+                
+                function updateNumber(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // 使用缓动函数
+                    const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                    const currentValue = startValue + (difference * easeOutQuart);
+                    
+                    if (suffix === '%') {
+                        element.textContent = prefix + currentValue.toFixed(2) + suffix;
+                    } else if (prefix === '$') {
+                        element.textContent = prefix + currentValue.toLocaleString('en-US', {minimumFractionDigits: 2});
+                    } else {
+                        element.textContent = prefix + Math.round(currentValue) + suffix;
+                    }
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(updateNumber);
+                    } else {
+                        // 添加完成动画
+                        element.classList.add('animate');
+                        setTimeout(() => element.classList.remove('animate'), 600);
+                    }
+                }
+                
+                requestAnimationFrame(updateNumber);
+            }
+            
+            // 更新收益指示器状态
+            function updateProfitIndicator(elementId, value) {
+                const indicator = document.getElementById(elementId);
+                if (!indicator) return;
+                
+                indicator.classList.remove('positive', 'negative');
+                if (value > 0) {
+                    indicator.classList.add('positive');
+                } else if (value < 0) {
+                    indicator.classList.add('negative');
+                }
+            }
+            
             // 更新概览统计
             function updateOverviewStats() {
                 const totalAccounts = accountsData.accounts.length;
@@ -3268,11 +4782,16 @@
                     avgDrawdown = accountsData.accounts.reduce((sum, acc) => sum + parseFloat(acc.drawdown || 0), 0) / accountsData.accounts.length;
                 }
                 
-                // 更新显示
-                document.getElementById('totalProfit').textContent = '$' + totalProfit.toLocaleString('en-US', {minimumFractionDigits: 2});
-                document.getElementById('avgGain').textContent = avgGain.toFixed(2);
-                document.getElementById('avgDrawdown').textContent = avgDrawdown.toFixed(2);
-                document.getElementById('totalAccounts').textContent = totalAccounts;
+                // 使用动画更新显示
+                animateNumber(document.getElementById('totalProfit'), totalProfit, 1200, '$');
+                animateNumber(document.getElementById('avgGain'), avgGain, 1000, '', '%');
+                animateNumber(document.getElementById('avgDrawdown'), avgDrawdown, 1000, '', '%');
+                animateNumber(document.getElementById('totalAccounts'), totalAccounts, 800);
+                
+                // 更新收益指示器
+                updateProfitIndicator('profitIndicator', totalProfit);
+                updateProfitIndicator('gainIndicator', avgGain);
+                updateProfitIndicator('drawdownIndicator', -avgDrawdown); // 回撤越小越好
             }
 
             // 更新账户列表
@@ -3298,9 +4817,17 @@
             function renderAccountCard(account) {
                 const category = accountsData.categories.find(cat => cat.id === account.accountType);
                 const categoryColor = category ? category.color : '#8b5cf6';
+                const gain = parseFloat(account.gain || 0);
+                const drawdown = parseFloat(account.drawdown || 0);
+                const daily = parseFloat(account.daily || 0);
+                const monthly = parseFloat(account.monthly || 0);
+                
+                // 计算收益状态
+                const getGainStatus = (value) => value > 0 ? 'positive' : value < 0 ? 'negative' : 'neutral';
+                const getDrawdownStatus = (value) => value < 5 ? 'positive' : value < 10 ? 'neutral' : 'negative';
                 
                 return `
-                    <div class="account-card">
+                    <div class="account-card" data-account-id="${account.id || account.name}">
                         <div class="account-header">
                             <div class="account-name">${account.name}</div>
                             <div class="account-category" style="background: ${categoryColor}20; color: ${categoryColor}; border: 1px solid ${categoryColor}40;">
@@ -3310,28 +4837,37 @@
                         
                         <div class="account-stats">
                             <div class="stat-item">
-                                <div class="stat-value">$${parseFloat(account.balance).toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+                                <div class="stat-value">
+                                    <span class="currency-symbol">$</span>
+                                    <span class="number-value">${parseFloat(account.balance).toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                                </div>
                                 <div class="stat-label">余额</div>
                             </div>
                             <div class="stat-item">
                                 <div class="stat-value">
-                                    <span class="number-value">${parseFloat(account.gain).toFixed(2)}</span>
-                                    <span class="percent-symbol">%</span>
+                                    <span class="profit-indicator ${getGainStatus(gain)}">
+                                        <span class="number-value">${gain.toFixed(2)}</span>
+                                        <span class="percent-symbol">%</span>
+                                    </span>
                                 </div>
                                 <div class="stat-label">收益率</div>
                             </div>
                             <div class="stat-item">
                                 <div class="stat-value">
-                                    <span class="number-value">${parseFloat(account.drawdown).toFixed(2)}</span>
-                                    <span class="percent-symbol">%</span>
+                                    <span class="profit-indicator ${getDrawdownStatus(drawdown)}">
+                                        <span class="number-value">${drawdown.toFixed(2)}</span>
+                                        <span class="percent-symbol">%</span>
+                                    </span>
                                 </div>
                                 <div class="stat-label">最大回撤</div>
                             </div>
                             ${account.daily ? `
                                 <div class="stat-item">
                                     <div class="stat-value">
-                                        <span class="number-value">${parseFloat(account.daily).toFixed(2)}</span>
-                                        <span class="percent-symbol">%</span>
+                                        <span class="profit-indicator ${getGainStatus(daily)}">
+                                            <span class="number-value">${daily.toFixed(2)}</span>
+                                            <span class="percent-symbol">%</span>
+                                        </span>
                                     </div>
                                     <div class="stat-label">日收益</div>
                                 </div>
@@ -3339,8 +4875,10 @@
                             ${account.monthly ? `
                                 <div class="stat-item">
                                     <div class="stat-value">
-                                        <span class="number-value">${parseFloat(account.monthly).toFixed(2)}</span>
-                                        <span class="percent-symbol">%</span>
+                                        <span class="profit-indicator ${getGainStatus(monthly)}">
+                                            <span class="number-value">${monthly.toFixed(2)}</span>
+                                            <span class="percent-symbol">%</span>
+                                        </span>
                                     </div>
                                     <div class="stat-label">月收益</div>
                                 </div>
@@ -3352,6 +4890,14 @@
                                 <p style="white-space: pre-line;">${account.description}</p>
                             </div>
                         ` : ''}
+                        
+                        <!-- 添加性能趋势指示器 -->
+                        <div class="performance-trend">
+                            <div class="trend-indicator ${gain > 0 ? 'trending-up' : gain < 0 ? 'trending-down' : 'trending-neutral'}">
+                                <span class="trend-icon">${gain > 0 ? '↗' : gain < 0 ? '↘' : '→'}</span>
+                                <span class="trend-text">${gain > 0 ? '表现优异' : gain < 0 ? '需要关注' : '表现稳定'}</span>
+                            </div>
+                        </div>
                     </div>
                 `;
             }
@@ -3360,6 +4906,338 @@
 
             // 初始化时加载账户数据
             loadAccountsData();
+            
+            // 初始化流线型卡片交互效果
+            initFlowCards();
+            
+            // 流线型卡片交互功能
+            function initFlowCards() {
+                const cards = document.querySelectorAll('.flow-card');
+                
+                cards.forEach((card, index) => {
+                    // 添加鼠标移动3D效果
+                    card.addEventListener('mousemove', (e) => {
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        
+                        const rotateX = (y - centerY) / 15;
+                        const rotateY = (centerX - x) / 15;
+                        
+                        card.style.transform = `translateY(-15px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                    });
+                    
+                    // 重置3D效果
+                    card.addEventListener('mouseleave', () => {
+                        card.style.transform = 'translateY(0) rotateX(0deg) rotateY(0deg)';
+                    });
+                    
+                    // 添加点击效果
+                    card.addEventListener('click', (e) => {
+                        // 创建点击波纹效果
+                        createFlowRippleEffect(card, e);
+                        
+                        // 添加点击动画
+                        card.style.transform = 'translateY(-10px) scale(0.98)';
+                        setTimeout(() => {
+                            card.style.transform = 'translateY(-15px) scale(1)';
+                        }, 150);
+                    });
+                    
+                    // 初始化进度环动画
+                    initProgressRings(card, index);
+                    
+                    // 添加数字滚动动画
+                    animateFlowCardNumbers(card, index);
+                });
+            }
+            
+            // 初始化总收益显示动画
+            function initProgressRings(card, index) {
+                const profitSimples = card.querySelectorAll('.profit-simple');
+                
+                profitSimples.forEach((simple, simpleIndex) => {
+                    // 添加进入动画
+                    setTimeout(() => {
+                        simple.style.opacity = '0';
+                        simple.style.transform = 'translateY(10px)';
+                        simple.style.transition = 'all 0.4s ease-out';
+                        
+                        setTimeout(() => {
+                            simple.style.opacity = '1';
+                            simple.style.transform = 'translateY(0)';
+                        }, 50);
+                    }, index * 200 + simpleIndex * 100);
+                });
+            }
+            
+            // 创建波纹效果
+            function createRippleEffect(card, event) {
+                const ripple = document.createElement('div');
+                const rect = card.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = event.clientX - rect.left - size / 2;
+                const y = event.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s ease-out;
+                    pointer-events: none;
+                    z-index: 10;
+                `;
+                
+                card.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            }
+            
+            // 创建流线型波纹效果
+            function createFlowRippleEffect(card, event) {
+                const ripple = document.createElement('div');
+                const rect = card.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = event.clientX - rect.left - size / 2;
+                const y = event.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: flowRippleExpand 0.8s ease-out;
+                    pointer-events: none;
+                    z-index: 10;
+                `;
+                
+                card.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 800);
+            }
+            
+            // 流线型数字动画
+            function animateFlowCardNumbers(card, index) {
+                const numberElements = card.querySelectorAll('.metric-value, .mini-value');
+                
+                numberElements.forEach((element, elementIndex) => {
+                    const finalValue = element.textContent;
+                    const isPercentage = finalValue.includes('%');
+                    const isCurrency = finalValue.includes('$');
+                    const numericValue = parseFloat(finalValue.replace(/[^0-9.-]/g, ''));
+                    
+                    if (!isNaN(numericValue)) {
+                        element.textContent = '0' + (isPercentage ? '%' : isCurrency ? '$0' : '');
+                        
+                        setTimeout(() => {
+                            animateNumber(element, 0, numericValue, 2000, isPercentage, isCurrency);
+                        }, index * 200 + elementIndex * 100);
+                    }
+                });
+            }
+            
+            // 数字滚动动画
+            function animateNumber(element, start, end, duration, isPercentage, isCurrency) {
+                const startTime = performance.now();
+                const prefix = isCurrency ? '$' : '';
+                const suffix = isPercentage ? '%' : '';
+                
+                function updateNumber(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // 使用缓动函数
+                    const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+                    const currentValue = start + (end - start) * easeOutCubic;
+                    
+                    if (isCurrency) {
+                        element.textContent = prefix + Math.round(currentValue).toLocaleString();
+                    } else if (isPercentage) {
+                        element.textContent = (currentValue > 0 ? '+' : '') + currentValue.toFixed(1) + suffix;
+                    } else {
+                        element.textContent = currentValue.toFixed(1) + suffix;
+                    }
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(updateNumber);
+                    }
+                }
+                
+                requestAnimationFrame(updateNumber);
+            }
+            
+            // 添加波纹动画CSS
+            const rippleStyle = document.createElement('style');
+            rippleStyle.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(2);
+                        opacity: 0;
+                    }
+                }
+                @keyframes flowRippleExpand {
+                    to {
+                        transform: scale(2.5);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(rippleStyle);
+            
+            // 卡片数字动画
+            function animateCardNumbers(card, index) {
+                const statValues = card.querySelectorAll('.stat-value');
+                
+                statValues.forEach((statValue, statIndex) => {
+                    const text = statValue.textContent;
+                    const number = parseFloat(text.replace(/[^0-9.-]/g, ''));
+                    
+                    if (!isNaN(number)) {
+                        // 延迟启动动画
+                        setTimeout(() => {
+                            animateNumber(statValue, number, 1500 + statIndex * 200, 
+                                text.includes('$') ? '$' : '', 
+                                text.includes('%') ? '%' : '');
+                        }, 800 + index * 300 + statIndex * 100);
+                    }
+                });
+            }
+            
+            // 添加卡片悬停时的粒子效果
+            function addParticleEffect(card) {
+                const particles = [];
+                const particleCount = 20;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.cssText = `
+                        position: absolute;
+                        width: 2px;
+                        height: 2px;
+                        background: rgba(255, 255, 255, 0.6);
+                        border-radius: 50%;
+                        pointer-events: none;
+                        z-index: 5;
+                    `;
+                    
+                    card.appendChild(particle);
+                    particles.push(particle);
+                }
+                
+                // 动画粒子
+                particles.forEach((particle, index) => {
+                    const delay = index * 50;
+                    const duration = 2000 + Math.random() * 1000;
+                    const startX = Math.random() * card.offsetWidth;
+                    const startY = Math.random() * card.offsetHeight;
+                    const endX = startX + (Math.random() - 0.5) * 100;
+                    const endY = startY + (Math.random() - 0.5) * 100;
+                    
+                    setTimeout(() => {
+                        particle.style.left = startX + 'px';
+                        particle.style.top = startY + 'px';
+                        particle.style.animation = `particleFloat ${duration}ms ease-out forwards`;
+                        particle.style.setProperty('--end-x', endX + 'px');
+                        particle.style.setProperty('--end-y', endY + 'px');
+                    }, delay);
+                });
+                
+                // 清理粒子
+                setTimeout(() => {
+                    particles.forEach(particle => particle.remove());
+                }, 5000);
+            }
+            
+            // 添加粒子动画CSS
+            const particleStyle = document.createElement('style');
+            particleStyle.textContent = `
+                @keyframes particleFloat {
+                    0% {
+                        transform: translate(0, 0) scale(1);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translate(calc(var(--end-x) - var(--start-x)), calc(var(--end-y) - var(--start-y))) scale(0);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(particleStyle);
+            
+            // 流线型粒子效果
+            function addFlowParticleEffect(card) {
+                const particles = [];
+                const particleCount = 15;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'flow-particle';
+                    particle.style.cssText = `
+                        position: absolute;
+                        width: 3px;
+                        height: 3px;
+                        background: linear-gradient(45deg, rgba(139, 92, 246, 0.8), rgba(6, 182, 212, 0.8));
+                        border-radius: 50%;
+                        pointer-events: none;
+                        z-index: 5;
+                        box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+                    `;
+                    
+                    card.appendChild(particle);
+                    particles.push(particle);
+                }
+                
+                // 动画粒子
+                particles.forEach((particle, index) => {
+                    const delay = index * 30;
+                    const duration = 1500 + Math.random() * 500;
+                    const startX = Math.random() * card.offsetWidth;
+                    const startY = Math.random() * card.offsetHeight;
+                    const endX = startX + (Math.random() - 0.5) * 80;
+                    const endY = startY + (Math.random() - 0.5) * 80;
+                    
+                    setTimeout(() => {
+                        particle.style.left = startX + 'px';
+                        particle.style.top = startY + 'px';
+                        particle.style.transition = `all ${duration}ms ease-out`;
+                        
+                        setTimeout(() => {
+                            particle.style.left = endX + 'px';
+                            particle.style.top = endY + 'px';
+                            particle.style.opacity = '0';
+                            particle.style.transform = 'scale(0)';
+                        }, 50);
+                        
+                        setTimeout(() => {
+                            particle.remove();
+                        }, duration + 100);
+                    }, delay);
+                });
+            }
+            
+            // 为流线型卡片添加粒子效果
+            document.querySelectorAll('.flow-card').forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    addFlowParticleEffect(card);
+                });
+            });
 
             // 监听本地存储变化，实时同步数据
             window.addEventListener('storage', function(e) {
