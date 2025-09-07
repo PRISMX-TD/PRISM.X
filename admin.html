@@ -951,10 +951,8 @@
         let syncInterval = null;
         let isOnline = navigator.onLine;
         
-        // API配置 - 直接使用GitHub API
-        const GITHUB_OWNER = 'PRISMX-TD';
-        const GITHUB_REPO = 'PRISM.X';
-        const DATA_ISSUE_TITLE = 'PRISM X Accounts Data';
+        // API配置
+        const API_BASE_URL = 'https://prism-x.vercel.app/api';
         
         // 加密的密码 (Base64编码)
         const ENCRYPTED_PASSWORD = 'cHJpc20jNiM5';
@@ -1028,28 +1026,15 @@
         async function loadData() {
             try {
                 if (isOnline) {
-                    // 从GitHub API加载数据
-                    const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues`);
+                    // 从Vercel API加载数据
+                    const response = await fetch(`${API_BASE_URL}/data`);
                     if (!response.ok) {
-                        throw new Error(`GitHub API请求失败: ${response.status}`);
+                        throw new Error(`API请求失败: ${response.status}`);
                     }
-                    
-                    const issues = await response.json();
-                    const dataIssue = issues.find(issue => issue.title === DATA_ISSUE_TITLE);
-                    
-                    if (dataIssue && dataIssue.body) {
-                        const jsonMatch = dataIssue.body.match(/```json\n([\s\S]*?)\n```/);
-                        if (jsonMatch) {
-                            const data = JSON.parse(jsonMatch[1]);
-                            accountsData = data.accounts || [];
-                            categoriesData = data.categories || [];
-                            console.log('从GitHub API加载数据成功');
-                        } else {
-                            throw new Error('GitHub Issue中没有找到有效数据');
-                        }
-                    } else {
-                        throw new Error('GitHub Issue不存在');
-                    }
+                    const data = await response.json();
+                    accountsData = data.accounts || [];
+                    categoriesData = data.categories || [];
+                    console.log('从Vercel API加载数据成功');
                 } else {
                     // 离线模式：从本地文件加载
                     const response = await fetch('data/accounts.json');
