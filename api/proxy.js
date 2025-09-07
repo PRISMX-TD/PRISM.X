@@ -45,6 +45,48 @@ app.get('/api/data', async (req, res) => {
     }
 });
 
+// 获取描述数据
+app.get('/api/descriptions', async (req, res) => {
+    try {
+        const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues`, {
+            headers: {
+                'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch issues');
+        }
+
+        const issues = await response.json();
+        const dataIssue = issues.find(issue => issue.title === DATA_ISSUE_TITLE);
+        
+        if (dataIssue && dataIssue.body) {
+            const jsonMatch = dataIssue.body.match(/```json\n([\s\S]*?)\n```/);
+            if (jsonMatch) {
+                const data = JSON.parse(jsonMatch[1]);
+                // 提取描述数据
+                const descriptions = {};
+                if (data.accounts) {
+                    data.accounts.forEach(account => {
+                        if (account.description) {
+                            descriptions[account.id] = account.description;
+                        }
+                    });
+                }
+                res.json(descriptions);
+                return;
+            }
+        }
+        
+        res.json({});
+    } catch (error) {
+        console.error('Error fetching descriptions:', error);
+        res.status(500).json({ error: 'Failed to fetch descriptions' });
+    }
+});
+
 // 保存数据
 app.post('/api/data', async (req, res) => {
     try {
