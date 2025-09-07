@@ -4928,11 +4928,11 @@
                 }
             }, 3000); // 3秒后隐藏加载器
 
-            // API 配置
-            const API_CONFIG = {
-                baseUrl: 'https://prism-x.vercel.app/api',
-                localDataUrl: 'data/accounts.json'
-            };
+            // API 配置 - 直接使用GitHub API
+            const GITHUB_OWNER = 'PRISMX-TD';
+            const GITHUB_REPO = 'PRISM.X';
+            const DATA_ISSUE_TITLE = 'PRISM X Accounts Data';
+            const LOCAL_DATA_URL = 'data/accounts.json';
 
             // 账户数据管理
             let accountsData = {
@@ -4944,13 +4944,21 @@
             // 从 API 加载数据
             async function loadDataFromAPI() {
                 try {
-                    const response = await fetch(`${API_CONFIG.baseUrl}/data`);
+                    const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues`);
                     if (response.ok) {
-                        const data = await response.json();
-                        return data;
+                        const issues = await response.json();
+                        const dataIssue = issues.find(issue => issue.title === DATA_ISSUE_TITLE);
+                        
+                        if (dataIssue && dataIssue.body) {
+                            const jsonMatch = dataIssue.body.match(/```json\n([\s\S]*?)\n```/);
+                            if (jsonMatch) {
+                                const data = JSON.parse(jsonMatch[1]);
+                                return data;
+                            }
+                        }
                     }
                 } catch (error) {
-                    console.error('从 API 加载数据失败:', error);
+                    console.error('从 GitHub API 加载数据失败:', error);
                 }
                 return null;
             }
@@ -4994,30 +5002,46 @@
                         }
                     }
                     
-                    // 如果localStorage没有数据，尝试从API获取
+                    // 如果localStorage没有数据，尝试从GitHub API获取
                     try {
-                        const response = await fetch(`${API_CONFIG.baseUrl}/descriptions`);
+                        const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues`);
                         if (response.ok) {
-                            const descriptions = await response.json();
-                            console.log('✅ 从API成功加载描述数据:', descriptions);
+                            const issues = await response.json();
+                            const dataIssue = issues.find(issue => issue.title === DATA_ISSUE_TITLE);
                             
-                            // 更新accountsData中的描述
-                            if (!accountsData.descriptions) {
-                                accountsData.descriptions = {};
+                            if (dataIssue && dataIssue.body) {
+                                const jsonMatch = dataIssue.body.match(/```json\n([\s\S]*?)\n```/);
+                                if (jsonMatch) {
+                                    const data = JSON.parse(jsonMatch[1]);
+                                    const descriptions = {};
+                                    if (data.accounts) {
+                                        data.accounts.forEach(account => {
+                                            if (account.description) {
+                                                descriptions[account.id] = account.description;
+                                            }
+                                        });
+                                    }
+                                    console.log('✅ 从GitHub API成功加载描述数据:', descriptions);
+                                    
+                                    // 更新accountsData中的描述
+                                    if (!accountsData.descriptions) {
+                                        accountsData.descriptions = {};
+                                    }
+                                    Object.assign(accountsData.descriptions, descriptions);
+                                    
+                                    // 立即更新页面显示
+                                    updateAccountDescriptions();
+                                    
+                                    return descriptions;
+                                }
                             }
-                            Object.assign(accountsData.descriptions, descriptions);
-                            
-                            // 立即更新页面显示
-                            updateAccountDescriptions();
-                            
-                            return descriptions;
                         }
                     } catch (apiError) {
-                        console.log('⚠️ API不可用，尝试从本地文件加载:', apiError.message);
+                        console.log('⚠️ GitHub API不可用，尝试从本地文件加载:', apiError.message);
                     }
                     
                     // 如果API不可用，从本地文件获取
-                    const localResponse = await fetch(API_CONFIG.localDataUrl);
+                    const localResponse = await fetch(LOCAL_DATA_URL);
                     if (localResponse.ok) {
                         const localData = await localResponse.json();
                         console.log('✅ 从本地文件加载数据:', localData);
