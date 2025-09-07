@@ -8674,6 +8674,7 @@
                         const parsedData = JSON.parse(localData);
 
                         accountsData = parsedData;
+                        lastDataHash = calculateDataHash(parsedData);
 
                         console.log('✅ 从localStorage加载账户数据成功:', parsedData);
                         updateAccountsDisplay();
@@ -8694,6 +8695,7 @@
                 const apiData = await loadDataFromAPI();
                 if (apiData) {
                     accountsData = apiData;
+                    lastDataHash = calculateDataHash(apiData);
                     // 同时保存到本地存储作为备份
                     localStorage.setItem('prismAccountsData', JSON.stringify(apiData));
                     console.log('✅ 从 API 加载账户数据成功:', apiData);
@@ -8714,6 +8716,7 @@
                         const data = await response.json();
 
                         accountsData = data;
+                        lastDataHash = calculateDataHash(data);
 
                         updateAccountsDisplay();
 
@@ -8759,6 +8762,7 @@
                 };
 
                 console.log('⚠️ 使用空数据，等待admin后台提供数据');
+                lastDataHash = calculateDataHash(accountsData);
                 updateAccountsDisplay();
 
                 updateAccountDescriptions();
@@ -8896,29 +8900,47 @@
                     return;
                 }
                 
-                // 清空现有内容
-                accountsFlow.innerHTML = '';
+                // 检查是否需要更新
+                const currentAccountIds = Array.from(accountsFlow.children)
+                    .map(card => card.getAttribute('data-account'))
+                    .filter(id => id);
+                const newAccountIds = (accountsData.accounts || []).map(acc => acc.id);
                 
-                if (!accountsData.accounts || accountsData.accounts.length === 0) {
-                    // 显示无数据提示
-                    accountsFlow.innerHTML = `
-                        <div class="no-accounts-message" style="text-align: center; padding: 60px 20px; color: #666;">
-                            <div style="font-size: 3rem; margin-bottom: 20px;">📊</div>
-                            <h3 style="color: #8b5cf6; margin-bottom: 10px;">等待数据加载</h3>
-                            <p>请先在管理后台添加账户数据</p>
-                            <p style="font-size: 0.9rem; margin-top: 10px; color: #888;">
-                                打开 <a href="admin.html" style="color: #8b5cf6;">admin.html</a> 开始管理账户
-                            </p>
-                        </div>
-                    `;
+                // 如果账户列表没有变化，跳过更新
+                if (currentAccountIds.length === newAccountIds.length && 
+                    currentAccountIds.every(id => newAccountIds.includes(id))) {
+                    console.log('账户列表无变化，跳过DOM更新');
                     return;
                 }
                 
-                // 动态生成账户卡片
-                accountsData.accounts.forEach(account => {
-                    const accountCard = createAccountCard(account);
-                    accountsFlow.appendChild(accountCard);
-                });
+                // 使用文档片段减少重绘
+                const fragment = document.createDocumentFragment();
+                
+                if (!accountsData.accounts || accountsData.accounts.length === 0) {
+                    // 显示无数据提示
+                    const noDataDiv = document.createElement('div');
+                    noDataDiv.className = 'no-accounts-message';
+                    noDataDiv.style.cssText = 'text-align: center; padding: 60px 20px; color: #666;';
+                    noDataDiv.innerHTML = `
+                        <div style="font-size: 3rem; margin-bottom: 20px;">📊</div>
+                        <h3 style="color: #8b5cf6; margin-bottom: 10px;">等待数据加载</h3>
+                        <p>请先在管理后台添加账户数据</p>
+                        <p style="font-size: 0.9rem; margin-top: 10px; color: #888;">
+                            打开 <a href="admin.html" style="color: #8b5cf6;">admin.html</a> 开始管理账户
+                        </p>
+                    `;
+                    fragment.appendChild(noDataDiv);
+                } else {
+                    // 动态生成账户卡片
+                    accountsData.accounts.forEach(account => {
+                        const accountCard = createAccountCard(account);
+                        fragment.appendChild(accountCard);
+                    });
+                }
+                
+                // 一次性更新DOM
+                accountsFlow.innerHTML = '';
+                accountsFlow.appendChild(fragment);
             }
             
             // 创建账户卡片
@@ -10264,49 +10286,74 @@
             });
 
 
-            // 定期检查本地存储数据变化（用于同页面内的数据同步）
-
-            setInterval(function() {
-
-                const currentData = localStorage.getItem('prismAccountsData');
-
-                if (currentData && currentData !== JSON.stringify(accountsData)) {
-
-                    console.log('检测到数据变化，重新加载');
-
-                    loadAccountsData();
-
-                }
-
-            }, 2000); // 每2秒检查一次
+            // 统一的数据同步机制 - 避免多个定时器冲突
+            let lastDataHash = '';
+            let isUpdating = false; // 防止并发更新
+            
+            // 计算数据哈希值，用于准确比较数据变化
+            function calculateDataHash(data) {
+                if (!data) return '';
+                // 只比较关键字段，忽略descriptions等动态字段
+                const coreData = {
+                    accounts: data.accounts || [],
+                    categories: data.categories || []
+                };
+                return JSON.stringify(coreData);
+            }
 
             
-            // 定期检查API数据更新（跨设备同步）
-            setInterval(async function() {
+            // 统一的数据同步函数
+            async function syncData() {
+                if (isUpdating) {
+                    console.log('数据正在更新中，跳过本次同步');
+                    return;
+                }
+                
+                isUpdating = true;
                 try {
-                    console.log('定期检查API数据更新...');
+                    console.log('开始数据同步检查...');
+                    
+                    // 1. 优先检查localStorage变化
+                    const localData = localStorage.getItem('prismAccountsData');
+                    if (localData) {
+                        const parsedData = JSON.parse(localData);
+                        const currentHash = calculateDataHash(parsedData);
+                        
+                        if (currentHash !== lastDataHash) {
+                            console.log('检测到localStorage数据变化，更新显示');
+                            accountsData = parsedData;
+                            lastDataHash = currentHash;
+                            updateAccountsDisplay();
+                            updateAccountDescriptions();
+                            return;
+                        }
+                    }
+                    
+                    // 2. 检查API数据更新（仅在localStorage无变化时）
                     const apiData = await loadDataFromAPI();
                     if (apiData) {
-                        const currentDataString = JSON.stringify(accountsData);
-                        const apiDataString = JSON.stringify(apiData);
+                        const apiHash = calculateDataHash(apiData);
                         
-                        if (currentDataString !== apiDataString) {
+                        if (apiHash !== lastDataHash) {
                             console.log('检测到API数据更新，同步数据');
                             accountsData = apiData;
+                            lastDataHash = apiHash;
+                            // 保存到localStorage作为备份
+                            localStorage.setItem('prismAccountsData', JSON.stringify(apiData));
                             updateAccountsDisplay();
                             updateAccountDescriptions();
                         }
                     }
+                    
                 } catch (error) {
-                    console.log('API数据检查失败:', error);
+                    console.error('数据同步失败:', error);
+                } finally {
+                    isUpdating = false;
                 }
-            }, 10000); // 每10秒检查一次API
+            }
             
-            // 定期检查后台描述更新
-            setInterval(function() {
-                console.log('定期检查后台描述更新...');
-                loadAccountDescriptions();
-            }, 30000); // 每30秒检查一次
+            // 启动统一的数据同步定时器
+            setInterval(syncData, 5000); // 每5秒检查一次，减少频率
 
 
             // 安全获取所有元素
