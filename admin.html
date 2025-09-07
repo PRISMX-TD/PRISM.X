@@ -952,11 +952,7 @@
         let isOnline = navigator.onLine;
         
         // API配置
-        const API_BASE_URL = 'https://prism-x.vercel.app/api';
-        const SIMPLE_API_URL = 'https://prism-x.vercel.app/api/data-simple';
-        
-        // 确保API_BASE_URL在全局作用域内可用
-        window.API_BASE_URL = API_BASE_URL;
+        const API_BASE_URL = 'https://prism-x-t8gk.vercel.app/api';
         
         // 加密的密码 (Base64编码)
         const ENCRYPTED_PASSWORD = 'cHJpc20jNiM5';
@@ -1030,27 +1026,15 @@
         async function loadData() {
             try {
                 if (isOnline) {
-                    // 先尝试简化API，如果失败再尝试完整API
-                    let response;
-                    try {
-                        response = await fetch(SIMPLE_API_URL);
-                        if (!response.ok) {
-                            throw new Error(`简化API请求失败: ${response.status}`);
-                        }
-                        console.log('使用简化API加载数据');
-                    } catch (simpleError) {
-                        console.log('简化API失败，尝试完整API:', simpleError.message);
-                        response = await fetch(`${window.API_BASE_URL || API_BASE_URL}/data`);
-                        if (!response.ok) {
-                            throw new Error(`完整API请求失败: ${response.status}`);
-                        }
-                        console.log('使用完整API加载数据');
+                    // 从API加载数据
+                    const response = await fetch(`${API_BASE_URL}/data`);
+                    if (!response.ok) {
+                        throw new Error(`API请求失败: ${response.status}`);
                     }
-                    
                     const data = await response.json();
                     accountsData = data.accounts || [];
                     categoriesData = data.categories || [];
-                    console.log('从Vercel API加载数据成功');
+                    console.log('从API加载数据成功');
                 } else {
                     // 离线模式：从本地文件加载
                     const response = await fetch('data/accounts.json');
@@ -1370,34 +1354,13 @@
                     // 在线模式：保存到API
                     updateSyncStatus('syncing', '正在同步数据...');
                     
-                    // 先尝试简化API，如果失败再尝试完整API
-                    let response;
-                    try {
-                        response = await fetch(SIMPLE_API_URL, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(data)
-                        });
-                        if (!response.ok) {
-                            throw new Error(`简化API保存失败: ${response.status}`);
-                        }
-                        console.log('使用简化API保存数据');
-                    } catch (simpleError) {
-                        console.log('简化API保存失败，尝试完整API:', simpleError.message);
-                        response = await fetch(`${window.API_BASE_URL || API_BASE_URL}/data`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(data)
-                        });
-                        if (!response.ok) {
-                            throw new Error(`完整API保存失败: ${response.status}`);
-                        }
-                        console.log('使用完整API保存数据');
-                    }
+                    const response = await fetch(`${API_BASE_URL}/data`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
                     
                     if (!response.ok) {
                         throw new Error(`保存失败: ${response.status}`);
@@ -1659,19 +1622,7 @@
             syncInterval = setInterval(async () => {
                 if (isOnline) {
                     try {
-                        // 先尝试简化API，如果失败再尝试完整API
-                        let response;
-                        try {
-                            response = await fetch(SIMPLE_API_URL);
-                            if (!response.ok) {
-                                throw new Error(`简化API请求失败: ${response.status}`);
-                            }
-                        } catch (simpleError) {
-                            response = await fetch(`${window.API_BASE_URL || API_BASE_URL}/data`);
-                            if (!response.ok) {
-                                throw new Error(`完整API请求失败: ${response.status}`);
-                            }
-                        }
+                        const response = await fetch(`${API_BASE_URL}/data`);
                         if (response.ok) {
                             const data = await response.json();
                             

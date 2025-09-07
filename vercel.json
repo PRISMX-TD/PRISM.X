@@ -2,22 +2,30 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/**/*.js",
+      "src": "index.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "admin.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/data.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    }
-  ],
-  "functions": {
-    "api/data.js": {
-      "maxDuration": 30
+      "src": "/",
+      "dest": "/index.html"
     },
-    "api/descriptions.js": {
-      "maxDuration": 30
+    {
+      "src": "/admin",
+      "dest": "/admin.html"
+    },
+    {
+      "src": "/api/data",
+      "dest": "/api/data.js"
     }
-  }
+  ]
 }
