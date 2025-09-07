@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>PRISM X API 测试</h1>
+    
+    <div class="test-section">
+        <h2>1. 测试API连接</h2>
+        <button onclick="testConnection()">测试连接</button>
+        <div id="connectionResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. 测试简化数据API</h2>
+        <button onclick="testSimpleData()">测试简化API</button>
+        <div id="simpleDataResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. 测试完整数据API</h2>
+        <button onclick="testFullData()">测试完整API</button>
+        <div id="fullDataResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. 测试数据保存</h2>
+        <button onclick="testSaveData()">测试保存数据</button>
+        <div id="saveDataResult"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://prism-x.vercel.app/api';
+        const SIMPLE_API_URL = 'https://prism-x.vercel.app/api/data-simple';
+        
+        function addResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const result = document.createElement('div');
+            result.className = `result ${type}`;
+            result.textContent = message;
+            container.appendChild(result);
+        }
+        
+        async function testConnection() {
+            addResult('connectionResult', '🌐 测试API连接...', 'info');
+            try {
+                const response = await fetch(`${API_BASE_URL}/test`);
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('connectionResult', `✅ 连接成功!\n状态码: ${response.status}\n响应: ${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    addResult('connectionResult', `❌ 连接失败\n状态码: ${response.status}\n状态文本: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                addResult('connectionResult', `❌ 连接错误: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testSimpleData() {
+            addResult('simpleDataResult', '📊 测试简化数据API...', 'info');
+            try {
+                const response = await fetch(SIMPLE_API_URL);
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('simpleDataResult', `✅ 简化API成功!\n状态码: ${response.status}\n数据: ${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    addResult('simpleDataResult', `❌ 简化API失败\n状态码: ${response.status}\n状态文本: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                addResult('simpleDataResult', `❌ 简化API错误: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testFullData() {
+            addResult('fullDataResult', '📊 测试完整数据API...', 'info');
+            try {
+                const response = await fetch(`${API_BASE_URL}/data`);
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('fullDataResult', `✅ 完整API成功!\n状态码: ${response.status}\n数据: ${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    addResult('fullDataResult', `❌ 完整API失败\n状态码: ${response.status}\n状态文本: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                addResult('fullDataResult', `❌ 完整API错误: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testSaveData() {
+            addResult('saveDataResult', '💾 测试数据保存...', 'info');
+            const testData = {
+                accounts: [
+                    {
+                        id: 'test-save-1',
+                        name: '测试保存账户',
+                        description: '这是一个测试保存的账户',
+                        balance: 5000,
+                        gain: 10.5,
+                        monthly: 1.2,
+                        daily: 0.4,
+                        drawdown: 2.0,
+                        status: 'active',
+                        category: 'test',
+                        emoji: '🧪',
+                        tags: ['测试', '保存']
+                    }
+                ],
+                categories: [
+                    {
+                        id: 'test',
+                        name: '测试分类',
+                        color: '#ff6b6b'
+                    }
+                ],
+                system: {
+                    lastUpdate: new Date().toISOString(),
+                    version: '1.0.0'
+                }
+            };
+            
+            try {
+                const response = await fetch(SIMPLE_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('saveDataResult', `✅ 数据保存成功!\n状态码: ${response.status}\n响应: ${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    addResult('saveDataResult', `❌ 数据保存失败\n状态码: ${response.status}\n状态文本: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                addResult('saveDataResult', `❌ 数据保存错误: ${error.message}`, 'error');
+            }
+        }
+        
+        // 页面加载时自动测试连接
+        window.addEventListener('load', () => {
+            testConnection();
+        });
+    </script>
+</body>
+</html>
