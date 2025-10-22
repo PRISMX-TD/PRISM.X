@@ -7751,9 +7751,83 @@
 
         }
 
-        
+        /* QQ弹窗样式 */
+        .qq-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
 
+        .qq-modal-content {
+            position: fixed;
+            background: transparent;
+            margin: 0;
+            padding: 0;
+            border-radius: 20px;
+            width: auto;
+            height: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
 
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .qq-modal-close {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            color: #666;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10001;
+            transition: color 0.3s ease;
+        }
+
+        .qq-modal-close:hover {
+            color: #333;
+        }
+
+        .qq-modal-body {
+            padding: 0;
+            text-align: center;
+        }
+
+        .qq-full-image {
+            max-width: 90vw;
+            max-height: 90vh;
+            width: auto;
+            height: auto;
+            border-radius: 20px;
+            display: block;
+            object-fit: contain;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .qq-full-image {
+                max-width: 95vw;
+                max-height: 95vh;
+            }
+        }
 
     </style>
 
@@ -8219,9 +8293,11 @@
 
                             <div class="timeline-content">
 
-                                <strong>团队成立</strong>
+                                <strong>接触了解</strong>
 
-                                "<span class="timeline-highlight">棱镜量化</span>"团队正式成立并进军全球交易市场，我们深信：情绪化和不确定性是手动交易的最大瓶颈。由此，我们踏上了用"<span class="timeline-highlight">算法交易</span>"解决"人性"弱点的探索之路，并构建了一个算法交易策略库。
+                                接触了解<span class="timeline-highlight">外汇行业</span>
+
+                                开始对外汇交易产生兴趣
 
                             </div>
 
@@ -8235,15 +8311,33 @@
 
                             <div class="timeline-content">
 
-                                <strong>精益求精</strong>
+                                <strong>自动化探索</strong>
 
-                                从深入到精益求精，我们整合了大量<span class="timeline-highlight">华尔街的算法交易策略</span>并吸纳了全球顶级量化机构的风控、算法精髓等丰富经验，不仅更加完善了我们的算法交易策略库，并建立了一套<span class="timeline-highlight">高级别的风控体系</span>，以加强策略的续航能力。
+                                尝试使用"<span class="timeline-highlight">自动化</span>"的概念来执行交易策略，
+
+                                初步了解程序化交易
 
                             </div>
 
                         </div>
 
                         
+
+                        <div class="timeline-item">
+
+                            <div class="timeline-year">2020</div>
+
+                            <div class="timeline-content">
+
+                                <strong>深入学习</strong>
+
+                                进一步研究学习网络上的<span class="timeline-highlight">EA</span>
+
+                                学习相关知识，积累经验
+
+                            </div>
+
+                        </div>
 
                         
 
@@ -8253,9 +8347,11 @@
 
                             <div class="timeline-content">
 
-                                <strong>交易哲学融合</strong>
+                                <strong>自主开发</strong>
 
-                                融合了我们的交易哲学，并加入了独特的"<span class="timeline-highlight">滚动优化</span>"、"<span class="timeline-highlight">动态风控</span>"模块，开发出一套风靡全球的算法交易策略，以非常强的风险管理能力在市场剧烈波动时，赚取更丰厚的收益。
+                                尝试自行开发<span class="timeline-highlight">EA</span>
+
+                                ，结合个人的交易知识和对市场的经验判断程序化
 
                             </div>
 
@@ -8269,9 +8365,11 @@
 
                             <div class="timeline-content">
 
-                                <strong>AI智能化升级</strong>
+                                <strong>团队建立</strong>
 
-                                "<span class="timeline-highlight">棱镜量化</span>"团队汇集了金融建模、软件开发和大数据分析各领域的成员。我们齐心协力，借助<span class="timeline-highlight">AI进一步升级优化</span>算法交易策略库，让工具更加智能化，升级为可商业化的旗舰级产品，既有程序化算法交易策略，也有智能可视化的行情分析软件。
+                                成立"<span class="timeline-highlight">棱镜量化</span>"团队
+
+                                与志同道合的队员探讨，优化和编写属于团队的第一个商业化EA
 
                             </div>
 
@@ -8285,9 +8383,11 @@
 
                             <div class="timeline-content">
 
-                                <strong>实战验证成功</strong>
+                                <strong>实盘验证</strong>
 
-                                算法力量在实战中不断得到验证。我们的算法交易策略在过去一年中，成功地在各类市场环境下保持<span class="timeline-highlight">稳定盈利</span>，年化收益率远超行业平均水平，最大回撤更是控制在安全线以内，完美兑现了我们最初的设计理念，确保了<span class="timeline-highlight">风险和收益的平衡</span>。
+                                持续优化EA参数
+
+                                EA投入<span class="timeline-highlight">实盘交易</span>，验证且取得实质性的进步
 
                             </div>
 
@@ -8301,9 +8401,11 @@
 
                             <div class="timeline-content">
 
-                                <strong>持续创新发展</strong>
+                                <strong>持续创新</strong>
 
-                                我们将持续拓展策略边界，开发针对不同市场周期的<span class="timeline-highlight">多元化算法交易EA矩阵</span>，并以滚动优化机制确保所有产品始终保持最佳性能，致力于为客户带来<span class="timeline-highlight">卓越且长期的投资价值</span>。
+                                研发不同策略EA，应对<span class="timeline-highlight">多元需求</span>
+
+                                维护现有EA，滚动优化参数以符合市场
 
                             </div>
 
@@ -11840,7 +11942,7 @@
 
                     <div class="footer-social">
 
-                        <a href="#" class="social-link" title="小红书">
+                        <a href="https://xhslink.com/m/5jvnUJHt0S7" target="_blank" class="social-link" title="小红书">
 
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
 
@@ -11852,7 +11954,7 @@
 
                         </a>
 
-                        <a href="#" class="social-link" title="QQ">
+                        <a href="#" class="social-link" title="QQ" onclick="showQQModal(event)">
 
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
 
@@ -12388,6 +12490,40 @@
         // 页面加载完成后初始化粒子效果
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(initializeParticleTransitions, 1000);
+        });
+    </script>
+
+    <!-- QQ弹窗 -->
+    <div id="qqModal" class="qq-modal">
+        <div class="qq-modal-content">
+            <span class="qq-modal-close">&times;</span>
+            <div class="qq-modal-body">
+                <img src="Photo/QQQR.jpg" alt="QQ二维码" class="qq-full-image">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // QQ弹窗功能
+        function showQQModal(event) {
+            event.preventDefault();
+            document.getElementById('qqModal').style.display = 'block';
+        }
+
+        // 关闭弹窗
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('qqModal');
+            const closeBtn = document.querySelector('.qq-modal-close');
+            
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+            }
+            
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            }
         });
     </script>
 </body>
