@@ -8,9 +8,30 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://api.github.com https://raw.githubusercontent.com https://prism-x.vercel.app; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; connect-src 'self' https://api.github.com https://raw.githubusercontent.com https://prism-x.vercel.app https://translate.googleapis.com https://translate-pa.googleapis.com https://*.google.com https://*.gstatic.com; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://translate-pa.googleapis.com https://*.gstatic.com https://*.google.com; script-src-elem 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://translate-pa.googleapis.com https://*.gstatic.com https://*.google.com; style-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://*.gstatic.com https://*.google.com; style-src-elem 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://*.gstatic.com https://*.google.com; img-src 'self' data: https: blob:; frame-src 'self' https://translate.google.com https://translate.googleapis.com https://*.gstatic.com https://*.google.com data: blob: about:; child-src 'self' https://translate.google.com https://translate.googleapis.com https://*.gstatic.com https://*.google.com data: blob: about:;">
 
     <title>棱镜量化 PRISM X</title>
+
+    <!-- 强力隐藏 Google Translate 横幅（置于<head>，优先级更高） -->
+    <style>
+        .goog-te-banner, .goog-te-banner-frame, iframe.goog-te-banner-frame,
+        .goog-te-balloon-frame, #goog-gt-tt, .goog-tooltip {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            opacity: 0 !important;
+        }
+        /* 更广泛的选择器，覆盖可能变化的 class 名称 */
+        [class^="goog-te-banner"], [class*=" goog-te-banner"],
+        [class^="VIpgJd-ZVi9od"], [class*=" VIpgJd-ZVi9od"],
+        .skiptranslate .goog-te-banner, .skiptranslate .goog-te-banner-frame {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            opacity: 0 !important;
+        }
+        body { top: 0 !important; }
+    </style>
 
     <style>
 
@@ -8785,6 +8806,9 @@
 
             };
 
+            // 数据变更哈希（需在首次使用前声明）
+            let lastDataHash = '';
+
 
 
             // 从 API 加载数据
@@ -10545,7 +10569,6 @@
 
 
             // 统一的数据同步机制 - 避免多个定时器冲突
-            let lastDataHash = '';
             let isUpdating = false; // 防止并发更新
             
             // 计算数据哈希值，用于准确比较数据变化
@@ -11903,6 +11926,216 @@
         });
 
     </script>
+    
+    <!-- 语言切换按钮与自动翻译支持（右上角） -->
+    <style>
+        /* 右上角切换按钮样式 */
+        .lang-toggle {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 99999;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(139, 92, 246, 0.6);
+            background: rgba(17, 24, 39, 0.6);
+            color: #e5e7eb;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 600;
+            transition: all .2s ease;
+            backdrop-filter: blur(6px);
+        }
+        .lang-toggle:hover {
+            background: rgba(31, 41, 55, 0.7);
+            box-shadow: 0 6px 24px rgba(139, 92, 246, 0.35);
+            transform: translateY(-1px);
+        }
+
+        /* 隐藏 Google Translate 的默认控件与横幅 */
+        #google_translate_element { display: none; }
+        .goog-te-banner, .goog-te-banner-frame { display: none !important; visibility: hidden !important; height: 0 !important; }
+        .goog-te-banner-frame.skiptranslate { display: none !important; visibility: hidden !important; height: 0 !important; }
+        iframe.goog-te-banner-frame { display: none !important; visibility: hidden !important; height: 0 !important; }
+        .goog-logo-link, .goog-te-gadget { display: none !important; }
+        #goog-gt-tt, .goog-tooltip, .goog-te-balloon-frame { display: none !important; }
+        .goog-te-gadget-icon { display: none !important; }
+        .goog-te-menu-frame { display: none !important; }
+        body { top: 0 !important; }
+    </style>
+
+    <!-- 隐藏的谷歌翻译挂载点 -->
+    <div id="google_translate_element"></div>
+
+    <!-- 右上角语言切换按钮 -->
+    <button id="langToggle" class="lang-toggle">EN</button>
+
+    <script>
+        // 初始化 Google Translate
+        function googleTranslateElementInit() {
+            if (window.google && window.google.translate) {
+                new google.translate.TranslateElement({
+                    pageLanguage: 'zh-CN',
+                    includedLanguages: 'en,zh-CN',
+                    autoDisplay: false
+                }, 'google_translate_element');
+            }
+        }
+
+        // 等待翻译下拉控件出现后应用目标语言（最多尝试 ~6 秒）
+        function ensureLanguageApplied(lang) {
+            var attempts = 0;
+            var timer = setInterval(function() {
+                attempts++;
+                var select = document.querySelector('select.goog-te-combo');
+                if (select) {
+                    select.value = (lang === 'en') ? 'en' : '';
+                    select.dispatchEvent(new Event('change'));
+                    updateToggleLabel(lang);
+                    clearInterval(timer);
+                }
+                if (attempts > 20) {
+                    clearInterval(timer);
+                }
+            }, 300);
+        }
+
+        // 读取/设置翻译 Cookie，便于在刷新后保持语言状态
+        function setTranslateCookie(path) {
+            try {
+                // 基本路径 Cookie（适用于大多数情况）
+                document.cookie = 'googtrans=' + path + ';path=/';
+                // 仅当域名有效且包含点号时再写入 domain Cookie，避免本地 file/localhost 报错
+                var host = window.location.hostname;
+                if (host && host.indexOf('.') !== -1) {
+                    document.cookie = 'googtrans=' + path + ';domain=' + host + ';path=/';
+                }
+            } catch (e) {}
+        }
+
+        function getCurrentLangByCookie() {
+            var m = document.cookie.match(/(?:^|; )googtrans=([^;]+)/);
+            if (!m) return 'zh-CN';
+            var val = decodeURIComponent(m[1]);
+            return val.indexOf('/zh-CN/en') !== -1 ? 'en' : 'zh-CN';
+        }
+
+        function translateTo(lang) {
+            // 优先通过下拉控件切换；若控件未就绪，使用 Cookie 兜底
+            applyLanguageWithRetry(lang);
+        }
+
+        function setTranslateCookie(path) {
+            try {
+                document.cookie = 'googtrans=' + path + ';path=/';
+                var host = window.location.hostname;
+                if (host && host.indexOf('.') !== -1) {
+                    document.cookie = 'googtrans=' + path + ';domain=' + host + ';path=/';
+                }
+            } catch (e) {}
+        }
+
+        function clearTranslateCookie() {
+            try {
+                var past = 'Thu, 01 Jan 1970 00:00:00 GMT';
+                document.cookie = 'googtrans=; expires=' + past + '; path=/';
+                var host = window.location.hostname;
+                if (host && host.indexOf('.') !== -1) {
+                    document.cookie = 'googtrans=; expires=' + past + '; domain=' + host + '; path=/';
+                }
+            } catch (e) {}
+        }
+
+        function isTranslated() {
+            try {
+                // DOM 标记或 Cookie 判断任一满足即视为已翻译
+                var html = document.documentElement;
+                if (html && (html.classList.contains('translated-ltr') || html.classList.contains('translated-rtl'))) return true;
+                var m = document.cookie.match(/(?:^|; )googtrans=([^;]+)/);
+                if (m && decodeURIComponent(m[1]).indexOf('/zh-CN/en') !== -1) return true;
+            } catch (e) {}
+            return false;
+        }
+
+        function applyLanguageWithRetry(lang) {
+            var attempts = 0;
+            var timer = setInterval(function() {
+                attempts++;
+                var select = document.querySelector('select.goog-te-combo');
+                if (select) {
+                    select.value = (lang === 'en') ? 'en' : '';
+                    select.dispatchEvent(new Event('change'));
+                    clearInterval(timer);
+                }
+                if (attempts > 20) {
+                    clearInterval(timer);
+                    // 兜底：写入 Cookie，必要时刷新一次
+                    var path = (lang === 'en') ? '/zh-CN/en' : '/en/zh-CN';
+                    setTranslateCookie(path);
+                    location.reload();
+                }
+            }, 300);
+        }
+
+        function updateToggleLabel(current) {
+            var btn = document.getElementById('langToggle');
+            if (!btn) return;
+            // 显示将切换到的目标语言
+            btn.textContent = (current === 'en') ? '中文' : 'EN';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // 初始视为中文界面，按钮显示将切到英文
+            updateToggleLabel('zh-CN');
+
+            var btn = document.getElementById('langToggle');
+            if (btn) {
+                btn.addEventListener('click', function () {
+                    if (isTranslated()) {
+                        // 取消翻译，恢复中文
+                        clearTranslateCookie();
+                        location.reload();
+                    } else {
+                        // 执行英文翻译
+                        translateTo('en');
+                        updateToggleLabel('en');
+                    }
+                });
+            }
+
+            // 强制移除/隐藏 Google 翻译横幅与提示气泡
+            function suppressGoogleBanner() {
+                try {
+                    var nodes = document.querySelectorAll('iframe.goog-te-banner-frame, .goog-te-banner, [class*="goog-te-banner"], #goog-gt-tt, .goog-te-balloon-frame, .goog-tooltip');
+                    nodes.forEach(function(n){
+                        n.style.display = 'none';
+                        n.style.visibility = 'hidden';
+                        if (n.style) n.style.height = '0px';
+                        if (n.remove) n.remove();
+                    });
+                    // 不再移除 body > .skiptranslate，避免破坏翻译控件结构
+                    var balloon = document.querySelector('#goog-gt-tt, .goog-te-balloon-frame, .goog-tooltip');
+                    if (balloon) {
+                        balloon.style.display = 'none';
+                        if (balloon.remove) balloon.remove();
+                    }
+                    if (document.body) document.body.style.top = '0px';
+                } catch (e) {}
+            }
+
+            // 初次执行 + 延迟多次执行，防止后加载再次出现
+            suppressGoogleBanner();
+            var hideTimer = setInterval(suppressGoogleBanner, 400);
+            setTimeout(function(){ clearInterval(hideTimer); }, 10000);
+
+            // 监听 DOM 变动，若横幅被插入则立即隐藏
+            var mo = new MutationObserver(suppressGoogleBanner);
+            mo.observe(document.documentElement, { childList: true, subtree: true });
+        });
+    </script>
+
+    <!-- 加载 Google Translate 脚本 -->
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 
 
